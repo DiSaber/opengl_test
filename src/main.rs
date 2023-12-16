@@ -3,7 +3,7 @@ mod shader;
 mod utils;
 mod vector3;
 
-use std::ffi::CString;
+use std::{ffi::CString, mem::size_of};
 
 use glfw::Context;
 use program::Program;
@@ -22,7 +22,7 @@ fn main() {
     ));
 
     let (mut window, _events) = glfw
-        .create_window(960, 540, "OpenGL Test", glfw::WindowMode::Windowed)
+        .create_window(800, 600, "OpenGL Test", glfw::WindowMode::Windowed)
         .unwrap();
 
     window.make_current();
@@ -52,16 +52,30 @@ fn main() {
     .flatten();
 
     let mut vbo = 0u32;
+    let mut vao = 0u32;
 
     unsafe {
         gl::GenBuffers(1, &mut vbo);
+        gl::GenVertexArrays(1, &mut vao);
+
+        gl::BindVertexArray(vao);
+
         gl::BindBuffer(gl::ARRAY_BUFFER, vbo);
         gl::BufferData(
             gl::ARRAY_BUFFER,
-            (triangle_vertices.len() * std::mem::size_of::<f32>()) as isize,
+            (triangle_vertices.len() * size_of::<f32>()) as isize,
             triangle_vertices.as_ptr() as *const std::ffi::c_void,
             gl::STATIC_DRAW,
         );
+        gl::VertexAttribPointer(
+            0,
+            3,
+            gl::FLOAT,
+            gl::FALSE,
+            3 * (size_of::<f32>() as i32),
+            0 as *const std::ffi::c_void,
+        );
+        gl::EnableVertexAttribArray(0);
     }
 
     let vertex_shader = Shader::from_source(
@@ -90,6 +104,13 @@ fn main() {
         unsafe {
             gl::ClearColor(0.2, 0.3, 0.3, 1.0);
             gl::Clear(gl::COLOR_BUFFER_BIT);
+        }
+
+        shader_program.use_program();
+
+        unsafe {
+            gl::BindVertexArray(vao);
+            gl::DrawArrays(gl::TRIANGLES, 0, 3);
         }
 
         window.swap_buffers();

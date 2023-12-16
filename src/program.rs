@@ -15,6 +15,12 @@ impl Program {
         }
     }
 
+    pub fn use_program(&self) {
+        unsafe {
+            gl::UseProgram(self.id);
+        }
+    }
+
     pub fn attach_shader(&mut self, shader: Shader) {
         unsafe {
             gl::AttachShader(self.id, shader.get_id());
