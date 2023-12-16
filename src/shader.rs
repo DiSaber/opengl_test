@@ -1,0 +1,60 @@
+use std::ffi::{CStr, CString};
+
+use crate::utils::WithLength;
+
+#[derive(Clone, Copy)]
+pub enum ShaderType {
+    VertexShader = gl::VERTEX_SHADER as isize,
+    FragmentShader = gl::FRAGMENT_SHADER as isize,
+}
+
+pub struct Shader {
+    pub id: u32,
+    pub shader_type: ShaderType,
+}
+
+impl Shader {
+    pub fn from_source(source: &CStr, shader_type: ShaderType) -> Result<Self, CString> {
+        let mut shader = Shader { id: 0, shader_type };
+        unsafe {
+            shader.id = gl::CreateShader(shader_type as u32);
+            gl::ShaderSource(shader.id, 1, &source.as_ptr(), std::ptr::null());
+            gl::CompileShader(shader.id);
+        }
+
+        let mut success = 0i32;
+        unsafe {
+            gl::GetShaderiv(shader.id, gl::COMPILE_STATUS, &mut success);
+        }
+
+        if success == 0 {
+            let mut error_length = 0i32;
+            unsafe {
+                gl::GetShaderiv(shader.id, gl::INFO_LOG_LENGTH, &mut error_length);
+            }
+
+            let error = CString::with_length(error_length as usize);
+            unsafe {
+                gl::GetShaderInfoLog(
+                    shader.id,
+                    error_length,
+                    std::ptr::null_mut(),
+                    error.as_ptr() as *mut i8,
+                );
+            }
+
+            return Err(error);
+        }
+
+        Ok(shader)
+    }
+}
+
+impl Drop for Shader {
+    fn drop(&mut self) {
+        unsafe {
+            gl::DeleteShader(self.id);
+        }
+        println!("Dropped");
+    }
+}

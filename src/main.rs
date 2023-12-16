@@ -1,9 +1,15 @@
+mod program;
+mod shader;
+mod utils;
 mod vector3;
 
 use std::ffi::CString;
 
 use glfw::Context;
-use vector3::{FlattenToVec, Vector3};
+use program::Program;
+use shader::{Shader, ShaderType};
+use utils::FlattenToVec;
+use vector3::Vector3;
 
 extern crate gl;
 extern crate glfw;
@@ -58,89 +64,19 @@ fn main() {
             triangle_vertices.as_ptr() as *const std::ffi::c_void,
             gl::STATIC_DRAW,
         );
-
-        let vertex_shader = gl::CreateShader(gl::VERTEX_SHADER);
-        gl::ShaderSource(
-            vertex_shader,
-            1,
-            &vertex_shader_source.as_ptr(),
-            std::ptr::null(),
-        );
-        gl::CompileShader(vertex_shader);
-
-        let mut success = 0i32;
-        gl::GetShaderiv(vertex_shader, gl::COMPILE_STATUS, &mut success);
-
-        if success == 0 {
-            let mut error_length = 0i32;
-            gl::GetShaderiv(vertex_shader, gl::INFO_LOG_LENGTH, &mut error_length);
-
-            let error = CString::from_vec_unchecked(Vec::from_iter(
-                std::iter::repeat(b' ').take(error_length as usize),
-            ));
-            gl::GetShaderInfoLog(
-                vertex_shader,
-                error_length,
-                std::ptr::null_mut(),
-                error.as_ptr() as *mut i8,
-            )
-        }
-
-        let fragment_shader = gl::CreateShader(gl::FRAGMENT_SHADER);
-        gl::ShaderSource(
-            fragment_shader,
-            1,
-            &fragment_shader_source.as_ptr(),
-            std::ptr::null(),
-        );
-        gl::CompileShader(fragment_shader);
-
-        let mut success = 0i32;
-        gl::GetShaderiv(fragment_shader, gl::COMPILE_STATUS, &mut success);
-
-        if success == 0 {
-            let mut error_length = 0i32;
-            gl::GetShaderiv(fragment_shader, gl::INFO_LOG_LENGTH, &mut error_length);
-
-            let error = CString::from_vec_unchecked(Vec::from_iter(
-                std::iter::repeat(b' ').take(error_length as usize),
-            ));
-            gl::GetShaderInfoLog(
-                fragment_shader,
-                error_length,
-                std::ptr::null_mut(),
-                error.as_ptr() as *mut i8,
-            )
-        }
-
-        let shader_program = gl::CreateProgram();
-        gl::AttachShader(shader_program, vertex_shader);
-        gl::AttachShader(shader_program, fragment_shader);
-        gl::LinkProgram(shader_program);
-
-        let mut success = 0i32;
-        gl::GetProgramiv(shader_program, gl::LINK_STATUS, &mut success);
-
-        if success == 0 {
-            let mut error_length = 0i32;
-            gl::GetProgramiv(fragment_shader, gl::INFO_LOG_LENGTH, &mut error_length);
-
-            let error = CString::from_vec_unchecked(Vec::from_iter(
-                std::iter::repeat(b' ').take(error_length as usize),
-            ));
-            gl::GetProgramInfoLog(
-                fragment_shader,
-                error_length,
-                std::ptr::null_mut(),
-                error.as_ptr() as *mut i8,
-            )
-        }
-
-        gl::DetachShader(shader_program, vertex_shader);
-        gl::DetachShader(shader_program, fragment_shader);
-        gl::DeleteShader(vertex_shader);
-        gl::DeleteShader(fragment_shader);
     }
+
+    let vertex_shader =
+        Shader::from_source(&vertex_shader_source, ShaderType::VertexShader).unwrap();
+
+    let fragment_shader =
+        Shader::from_source(&fragment_shader_source, ShaderType::FragmentShader).unwrap();
+
+    let mut shader_program = Program::new();
+
+    shader_program.attach_shader(vertex_shader);
+    shader_program.attach_shader(fragment_shader);
+    shader_program.link_program().unwrap();
 
     while !window.should_close() {
         if window.get_key(glfw::Key::Escape) == glfw::Action::Press {
