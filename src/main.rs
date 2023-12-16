@@ -3,7 +3,7 @@ mod vector3;
 use std::ffi::CString;
 
 use glfw::Context;
-use vector3::{FlattenVector3, Vector3};
+use vector3::{FlattenToVec, Vector3};
 
 extern crate gl;
 extern crate glfw;
@@ -75,14 +75,9 @@ fn main() {
             let mut error_length = 0i32;
             gl::GetShaderiv(vertex_shader, gl::INFO_LOG_LENGTH, &mut error_length);
 
-            let error = CString::from_vec_unchecked(
-                [b' ']
-                    .iter()
-                    .cycle()
-                    .take(error_length as usize)
-                    .cloned()
-                    .collect::<Vec<u8>>(),
-            );
+            let error = CString::from_vec_unchecked(Vec::from_iter(
+                std::iter::repeat(b' ').take(error_length as usize),
+            ));
             gl::GetShaderInfoLog(
                 vertex_shader,
                 error_length,
@@ -107,14 +102,9 @@ fn main() {
             let mut error_length = 0i32;
             gl::GetShaderiv(fragment_shader, gl::INFO_LOG_LENGTH, &mut error_length);
 
-            let error = CString::from_vec_unchecked(
-                [b' ']
-                    .iter()
-                    .cycle()
-                    .take(error_length as usize)
-                    .cloned()
-                    .collect::<Vec<u8>>(),
-            );
+            let error = CString::from_vec_unchecked(Vec::from_iter(
+                std::iter::repeat(b' ').take(error_length as usize),
+            ));
             gl::GetShaderInfoLog(
                 fragment_shader,
                 error_length,
@@ -135,14 +125,9 @@ fn main() {
             let mut error_length = 0i32;
             gl::GetProgramiv(fragment_shader, gl::INFO_LOG_LENGTH, &mut error_length);
 
-            let error = CString::from_vec_unchecked(
-                [b' ']
-                    .iter()
-                    .cycle()
-                    .take(error_length as usize)
-                    .cloned()
-                    .collect::<Vec<u8>>(),
-            );
+            let error = CString::from_vec_unchecked(Vec::from_iter(
+                std::iter::repeat(b' ').take(error_length as usize),
+            ));
             gl::GetProgramInfoLog(
                 fragment_shader,
                 error_length,
