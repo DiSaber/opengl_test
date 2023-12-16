@@ -52,8 +52,6 @@ fn main() {
     .flatten();
 
     let mut vbo = 0u32;
-    let vertex_shader_source = CString::new(include_str!("shaders/triangle.vert")).unwrap();
-    let fragment_shader_source = CString::new(include_str!("shaders/triangle.frag")).unwrap();
 
     unsafe {
         gl::GenBuffers(1, &mut vbo);
@@ -66,11 +64,17 @@ fn main() {
         );
     }
 
-    let vertex_shader =
-        Shader::from_source(&vertex_shader_source, ShaderType::VertexShader).unwrap();
+    let vertex_shader = Shader::from_source(
+        &CString::new(include_str!("shaders/triangle.vert")).unwrap(),
+        ShaderType::VertexShader,
+    )
+    .unwrap();
 
-    let fragment_shader =
-        Shader::from_source(&fragment_shader_source, ShaderType::FragmentShader).unwrap();
+    let fragment_shader = Shader::from_source(
+        &CString::new(include_str!("shaders/triangle.frag")).unwrap(),
+        ShaderType::FragmentShader,
+    )
+    .unwrap();
 
     let mut shader_program = Program::new();
 

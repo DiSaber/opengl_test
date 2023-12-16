@@ -59,6 +59,5 @@ impl Drop for Shader {
         unsafe {
             gl::DeleteShader(self.id);
         }
-        println!("Dropped");
     }
 }

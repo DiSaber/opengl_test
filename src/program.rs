@@ -27,7 +27,6 @@ impl Program {
         unsafe {
             gl::DetachShader(self.id, shader.get_id());
         }
-        println!("Detatched");
     }
 
     pub fn link_program(&mut self) -> Result<(), CString> {
