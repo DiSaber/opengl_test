@@ -9,16 +9,20 @@ pub enum ShaderType {
 }
 
 pub struct Shader {
-    pub id: u32,
-    pub shader_type: ShaderType,
+    id: u32,
 }
 
 impl Shader {
-    pub fn from_source(source: &CStr, shader_type: ShaderType) -> Result<Self, CString> {
-        let mut shader = Shader { id: 0, shader_type };
+    pub fn get_id(&self) -> u32 {
+        self.id
+    }
+
+    pub fn from_source(shader_source: &CStr, shader_type: ShaderType) -> Result<Self, CString> {
+        let shader = Shader {
+            id: unsafe { gl::CreateShader(shader_type as u32) },
+        };
         unsafe {
-            shader.id = gl::CreateShader(shader_type as u32);
-            gl::ShaderSource(shader.id, 1, &source.as_ptr(), std::ptr::null());
+            gl::ShaderSource(shader.id, 1, &shader_source.as_ptr(), std::ptr::null());
             gl::CompileShader(shader.id);
         }
 

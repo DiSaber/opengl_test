@@ -3,7 +3,7 @@ use std::ffi::CString;
 use crate::{shader::Shader, utils::WithLength};
 
 pub struct Program {
-    pub id: u32,
+    id: u32,
     shaders: Vec<Shader>,
 }
 
@@ -17,7 +17,7 @@ impl Program {
 
     pub fn attach_shader(&mut self, shader: Shader) {
         unsafe {
-            gl::AttachShader(self.id, shader.id);
+            gl::AttachShader(self.id, shader.get_id());
         }
 
         self.shaders.push(shader);
@@ -25,7 +25,7 @@ impl Program {
 
     fn detach_shader(&self, shader: &Shader) {
         unsafe {
-            gl::DetachShader(self.id, shader.id);
+            gl::DetachShader(self.id, shader.get_id());
         }
         println!("Detatched");
     }
@@ -66,5 +66,13 @@ impl Program {
         self.shaders.clear();
 
         Ok(())
+    }
+}
+
+impl Drop for Program {
+    fn drop(&mut self) {
+        unsafe {
+            gl::DeleteProgram(self.id);
+        }
     }
 }
