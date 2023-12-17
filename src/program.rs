@@ -2,12 +2,12 @@ use std::ffi::CString;
 
 use crate::{shader::Shader, utils::WithLength};
 
-pub struct Program {
+pub struct Program<'a> {
     id: u32,
-    shaders: Vec<Shader>,
+    shaders: Vec<&'a Shader>,
 }
 
-impl Program {
+impl<'a> Program<'a> {
     pub fn new() -> Self {
         Program {
             id: unsafe { gl::CreateProgram() },
@@ -21,7 +21,7 @@ impl Program {
         }
     }
 
-    pub fn attach_shader(&mut self, shader: Shader) {
+    pub fn attach_shader(&mut self, shader: &'a Shader) {
         unsafe {
             gl::AttachShader(self.id, shader.get_id());
         }
@@ -74,8 +74,14 @@ impl Program {
     }
 }
 
-impl Drop for Program {
+impl<'a> Drop for Program<'a> {
     fn drop(&mut self) {
+        for shader in &self.shaders {
+            self.detach_shader(shader);
+        }
+
+        self.shaders.clear();
+
         unsafe {
             gl::DeleteProgram(self.id);
         }

@@ -47,38 +47,39 @@ fn main() {
         .collect();
 
     let mut vbo = 0u32;
-    let mut vao = 0u32;
     let mut ebo = 0u32;
+    let mut vao = 0u32;
 
     unsafe {
         gl::GenBuffers(1, &mut vbo);
-        gl::GenVertexArrays(1, &mut vao);
         gl::GenBuffers(1, &mut ebo);
+        gl::GenVertexArrays(1, &mut vao);
 
         gl::BindVertexArray(vao);
-
-        gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, ebo);
-        gl::BufferData(
-            gl::ELEMENT_ARRAY_BUFFER,
-            (indices.len() * size_of::<u32>()) as isize,
-            indices.as_ptr() as *const std::ffi::c_void,
-            gl::STATIC_DRAW,
-        );
 
         gl::BindBuffer(gl::ARRAY_BUFFER, vbo);
         gl::BufferData(
             gl::ARRAY_BUFFER,
             (vertices.len() * size_of::<f32>()) as isize,
-            vertices.as_ptr() as *const std::ffi::c_void,
+            vertices.as_ptr() as *const gl::types::GLvoid,
             gl::STATIC_DRAW,
         );
+
+        gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, ebo);
+        gl::BufferData(
+            gl::ELEMENT_ARRAY_BUFFER,
+            (indices.len() * size_of::<u32>()) as isize,
+            indices.as_ptr() as *const gl::types::GLvoid,
+            gl::STATIC_DRAW,
+        );
+
         gl::VertexAttribPointer(
             0,
             3,
             gl::FLOAT,
             gl::FALSE,
-            3 * (size_of::<f32>() as i32),
-            0 as *const std::ffi::c_void,
+            (3 * size_of::<f32>()) as i32,
+            0 as *const gl::types::GLvoid,
         );
         gl::EnableVertexAttribArray(0);
     }
@@ -97,8 +98,9 @@ fn main() {
 
     let mut shader_program = Program::new();
 
-    shader_program.attach_shader(vertex_shader);
-    shader_program.attach_shader(fragment_shader);
+    shader_program.attach_shader(&vertex_shader);
+    shader_program.attach_shader(&fragment_shader);
+
     shader_program.link_program().unwrap();
 
     while !window.should_close() {
@@ -115,14 +117,12 @@ fn main() {
 
         unsafe {
             gl::BindVertexArray(vao);
-            gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, ebo);
             gl::DrawElements(
                 gl::TRIANGLES,
                 6,
                 gl::UNSIGNED_INT,
                 0 as *const std::ffi::c_void,
             )
-            // gl::DrawArrays(gl::TRIANGLES, 0, 3);
         }
 
         window.swap_buffers();
