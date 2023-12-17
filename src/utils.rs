@@ -9,16 +9,3 @@ impl WithLength for CString {
 pub trait WithLength {
     fn with_length(length: usize) -> Self;
 }
-
-impl<T, U> FlattenToVec<T> for Vec<U>
-where
-    U: FlattenToVec<T>,
-{
-    fn flatten(&self) -> Vec<T> {
-        self.iter().flat_map(|v| v.flatten()).collect()
-    }
-}
-
-pub trait FlattenToVec<T> {
-    fn flatten(&self) -> Vec<T>;
-}
