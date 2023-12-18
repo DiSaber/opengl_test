@@ -1,12 +1,15 @@
 mod buffer;
+mod mesh;
 mod program;
 mod shader;
 mod utils;
 mod vector3;
 
-use std::{ffi::CString, mem::size_of};
+use std::ffi::CString;
 
+use buffer::Buffer;
 use glfw::Context;
+use mesh::Mesh;
 use program::Program;
 use shader::{Shader, ShaderType};
 use vector3::Vector3;
@@ -32,58 +35,25 @@ fn main() {
         gl::Viewport(0, 0, width, height);
     });
 
-    let vertices: Vec<f32> = vec![
-        Vector3::new(0.5, 0.5, 0.0),
-        Vector3::new(0.5, -0.5, 0.0),
-        Vector3::new(-0.5, -0.5, 0.0),
-        Vector3::new(-0.5, 0.5, 0.0),
-    ]
-    .into_iter()
-    .flatten()
-    .collect();
+    let vertices = Buffer::new(
+        vec![
+            Vector3::new(0.5, 0.5, 0.0),
+            Vector3::new(0.5, -0.5, 0.0),
+            Vector3::new(-0.5, -0.5, 0.0),
+            Vector3::new(-0.5, 0.5, 0.0),
+        ]
+        .into_iter()
+        .flatten()
+        .collect(),
+        3,
+    );
 
     let indices: Vec<u32> = vec![Vector3::new(0, 1, 3), Vector3::new(1, 2, 3)]
         .into_iter()
         .flatten()
         .collect();
 
-    let mut vbo = 0u32;
-    let mut ebo = 0u32;
-    let mut vao = 0u32;
-
-    unsafe {
-        gl::GenBuffers(1, &mut vbo);
-        gl::GenBuffers(1, &mut ebo);
-        gl::GenVertexArrays(1, &mut vao);
-
-        gl::BindVertexArray(vao);
-
-        gl::BindBuffer(gl::ARRAY_BUFFER, vbo);
-        gl::BufferData(
-            gl::ARRAY_BUFFER,
-            (vertices.len() * size_of::<f32>()) as isize,
-            vertices.as_ptr() as *const gl::types::GLvoid,
-            gl::STATIC_DRAW,
-        );
-
-        gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, ebo);
-        gl::BufferData(
-            gl::ELEMENT_ARRAY_BUFFER,
-            (indices.len() * size_of::<u32>()) as isize,
-            indices.as_ptr() as *const gl::types::GLvoid,
-            gl::STATIC_DRAW,
-        );
-
-        gl::VertexAttribPointer(
-            0,
-            3,
-            gl::FLOAT,
-            gl::FALSE,
-            (3 * size_of::<f32>()) as i32,
-            0 as *const gl::types::GLvoid,
-        );
-        gl::EnableVertexAttribArray(0);
-    }
+    let test_mesh = Mesh::from_buffers(vec![vertices], indices).unwrap();
 
     let vertex_shader = Shader::from_source(
         &CString::new(include_str!("shaders/triangle.vert")).unwrap(),
@@ -110,16 +80,7 @@ fn main() {
         }
 
         shader_program.use_program();
-
-        unsafe {
-            gl::BindVertexArray(vao);
-            gl::DrawElements(
-                gl::TRIANGLES,
-                6,
-                gl::UNSIGNED_INT,
-                0 as *const std::ffi::c_void,
-            )
-        }
+        test_mesh.draw();
 
         window.swap_buffers();
         glfw.poll_events();

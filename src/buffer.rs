@@ -1,10 +1,10 @@
 pub struct Buffer<T> {
     pub buffer: Vec<T>,
-    pub size: i32,
+    pub size: usize,
 }
 
 impl<T> Buffer<T> {
-    pub fn new(buffer: Vec<T>, size: i32) -> Self {
+    pub fn new(buffer: Vec<T>, size: usize) -> Self {
         Buffer { buffer, size }
     }
 }
