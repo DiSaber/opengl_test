@@ -55,7 +55,11 @@ impl Mesh {
             gl::BindVertexArray(mesh.vao);
         }
 
-        let mut final_buffer: Vec<f32> = Vec::new();
+        let mut final_buffer: Vec<f32> = Vec::with_capacity(
+            object_buffer
+                .iter()
+                .fold(0, |acc, buffer| acc + buffer.buffer.len()),
+        );
 
         for i in 0..length {
             for buffer in &object_buffer {
