@@ -2,59 +2,41 @@ use std::ffi::CString;
 
 use crate::{shader::Shader, utils::WithLength};
 
-pub struct Program<'a> {
+pub struct Program {
     id: u32,
-    shaders: Vec<&'a Shader>,
 }
 
-impl<'a> Program<'a> {
-    pub fn new() -> Self {
-        Program {
+impl Program {
+    pub fn from_shaders(shaders: Vec<&Shader>) -> Result<Self, CString> {
+        let program = Program {
             id: unsafe { gl::CreateProgram() },
-            shaders: Vec::new(),
-        }
-    }
+        };
 
-    pub fn use_program(&self) {
-        unsafe {
-            gl::UseProgram(self.id);
-        }
-    }
-
-    pub fn attach_shader(&mut self, shader: &'a Shader) {
-        unsafe {
-            gl::AttachShader(self.id, shader.get_id());
+        for shader in &shaders {
+            unsafe {
+                gl::AttachShader(program.id, shader.get_id());
+            }
         }
 
-        self.shaders.push(shader);
-    }
-
-    fn detach_shader(&self, shader: &Shader) {
         unsafe {
-            gl::DetachShader(self.id, shader.get_id());
-        }
-    }
-
-    pub fn link_program(&mut self) -> Result<(), CString> {
-        unsafe {
-            gl::LinkProgram(self.id);
+            gl::LinkProgram(program.id);
         }
 
         let mut success = 0i32;
         unsafe {
-            gl::GetProgramiv(self.id, gl::LINK_STATUS, &mut success);
+            gl::GetProgramiv(program.id, gl::LINK_STATUS, &mut success);
         }
 
         if success == 0 {
             let mut error_length = 0i32;
             unsafe {
-                gl::GetProgramiv(self.id, gl::INFO_LOG_LENGTH, &mut error_length);
+                gl::GetProgramiv(program.id, gl::INFO_LOG_LENGTH, &mut error_length);
             }
 
             let error = CString::with_length(error_length as usize);
             unsafe {
                 gl::GetProgramInfoLog(
-                    self.id,
+                    program.id,
                     error_length,
                     std::ptr::null_mut(),
                     error.as_ptr() as *mut i8,
@@ -64,24 +46,24 @@ impl<'a> Program<'a> {
             return Err(error);
         }
 
-        for shader in &self.shaders {
-            self.detach_shader(shader);
+        for shader in &shaders {
+            unsafe {
+                gl::DetachShader(program.id, shader.get_id());
+            }
         }
 
-        self.shaders.clear();
+        Ok(program)
+    }
 
-        Ok(())
+    pub fn use_program(&self) {
+        unsafe {
+            gl::UseProgram(self.id);
+        }
     }
 }
 
-impl<'a> Drop for Program<'a> {
+impl Drop for Program {
     fn drop(&mut self) {
-        for shader in &self.shaders {
-            self.detach_shader(shader);
-        }
-
-        self.shaders.clear();
-
         unsafe {
             gl::DeleteProgram(self.id);
         }

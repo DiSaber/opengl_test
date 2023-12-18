@@ -1,3 +1,4 @@
+mod buffer;
 mod program;
 mod shader;
 mod utils;
@@ -96,12 +97,7 @@ fn main() {
     )
     .unwrap();
 
-    let mut shader_program = Program::new();
-
-    shader_program.attach_shader(&vertex_shader);
-    shader_program.attach_shader(&fragment_shader);
-
-    shader_program.link_program().unwrap();
+    let shader_program = Program::from_shaders(vec![&vertex_shader, &fragment_shader]).unwrap();
 
     while !window.should_close() {
         if window.get_key(glfw::Key::Escape) == glfw::Action::Press {
