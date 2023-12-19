@@ -1,4 +1,4 @@
-use std::ffi::CString;
+use std::ffi::{CStr, CString};
 
 use crate::{shader::Shader, utils::WithLength};
 
@@ -59,6 +59,10 @@ impl Program {
         unsafe {
             gl::UseProgram(self.id);
         }
+    }
+
+    pub fn set_float(&self, name: &CStr, value: f32) {
+        unsafe { gl::Uniform1f(gl::GetUniformLocation(self.id, name.as_ptr()), value) };
     }
 }
 

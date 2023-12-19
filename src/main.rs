@@ -3,6 +3,7 @@ mod mesh;
 mod program;
 mod shader;
 mod utils;
+mod vector2;
 mod vector3;
 
 use std::ffi::CString;
@@ -47,22 +48,35 @@ fn main() {
         .collect(),
         3,
     );
+    let colors = Buffer::new(
+        vec![
+            Vector3::new(1.0, 0.0, 0.0),
+            Vector3::new(0.0, 1.0, 0.0),
+            Vector3::new(0.0, 0.0, 1.0),
+            Vector3::new(1.0, 1.0, 1.0),
+        ]
+        .into_iter()
+        .flatten()
+        .collect(),
+        3,
+    );
 
     let indices: Vec<u32> = vec![Vector3::new(0, 1, 3), Vector3::new(1, 2, 3)]
         .into_iter()
         .flatten()
         .collect();
 
-    let test_mesh = Mesh::from_buffers(vec![vertices], indices).unwrap();
+    // let mesh = Mesh::from_buffers(vec![vertices], indices).unwrap();
+    let color_mesh = Mesh::from_buffers(vec![vertices, colors], indices).unwrap();
 
     let vertex_shader = Shader::from_source(
-        &CString::new(include_str!("shaders/triangle.vert")).unwrap(),
+        &CString::new(include_str!("shaders/triangle_color/triangle_color.vert")).unwrap(),
         ShaderType::VertexShader,
     )
     .unwrap();
 
     let fragment_shader = Shader::from_source(
-        &CString::new(include_str!("shaders/triangle.frag")).unwrap(),
+        &CString::new(include_str!("shaders/triangle_color/triangle_color.frag")).unwrap(),
         ShaderType::FragmentShader,
     )
     .unwrap();
@@ -80,7 +94,11 @@ fn main() {
         }
 
         shader_program.use_program();
-        test_mesh.draw();
+        /*shader_program.set_float(
+            &CString::new("colorScale").unwrap(),
+            ((glfw.get_time().sin() / 2.0) + 0.5) as f32,
+        );*/
+        color_mesh.draw();
 
         window.swap_buffers();
         glfw.poll_events();
