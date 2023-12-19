@@ -5,13 +5,14 @@ mod shader;
 mod utils;
 mod vector2;
 mod vector3;
+mod vector4;
 
 use std::ffi::CString;
 
 use buffer::Buffer;
 use glfw::Context;
 use mesh::Mesh;
-use program::Program;
+use program::{Program, ProgramValue};
 use shader::{Shader, ShaderType};
 use vector3::Vector3;
 
@@ -94,9 +95,9 @@ fn main() {
         }
 
         shader_program.use_program();
-        /*shader_program.set_float(
+        /*shader_program.set_value(
             &CString::new("colorScale").unwrap(),
-            ((glfw.get_time().sin() / 2.0) + 0.5) as f32,
+            ProgramValue::Float(((glfw.get_time().sin() / 2.0) + 0.5) as f32),
         );*/
         color_mesh.draw();
 
