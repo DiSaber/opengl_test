@@ -5,9 +5,6 @@ mod shader;
 mod utils;
 mod vector2;
 mod vector3;
-mod vector4;
-
-use std::ffi::CString;
 
 use buffer::Buffer;
 use glfw::Context;
@@ -71,18 +68,18 @@ fn main() {
     let color_mesh = Mesh::from_buffers(vec![vertices, colors], indices).unwrap();
 
     let vertex_shader = Shader::from_source(
-        &CString::new(include_str!("shaders/triangle_color/triangle_color.vert")).unwrap(),
+        include_str!("shaders/triangle_color.vert"),
         ShaderType::VertexShader,
     )
     .unwrap();
 
     let fragment_shader = Shader::from_source(
-        &CString::new(include_str!("shaders/triangle_color/triangle_color.frag")).unwrap(),
+        include_str!("shaders/triangle_color.frag"),
         ShaderType::FragmentShader,
     )
     .unwrap();
 
-    let shader_program = Program::from_shaders(vec![&vertex_shader, &fragment_shader]).unwrap();
+    let shader_program = Program::from_shaders(&vertex_shader, &fragment_shader, None).unwrap();
 
     while !window.should_close() {
         if window.get_key(glfw::Key::Escape) == glfw::Action::Press {
