@@ -7,11 +7,19 @@ pub struct Vertex {
 }
 
 impl Vertex {
-    pub fn new(position: Vector3<f32>) -> Self {
+    pub fn pos(position: Vector3<f32>) -> Self {
         Vertex {
             position,
             normal: Vector3::default(),
             tex_coord: Vector2::default(),
+        }
+    }
+
+    pub fn tex(position: Vector3<f32>, tex_coord: Vector2<f32>) -> Self {
+        Vertex {
+            position,
+            normal: Vector3::default(),
+            tex_coord,
         }
     }
 

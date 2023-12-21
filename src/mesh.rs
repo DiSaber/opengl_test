@@ -1,4 +1,4 @@
-use crate::vertex::Vertex;
+use crate::{texture::Texture, vertex::Vertex};
 
 pub struct Mesh {
     vao: u32,
@@ -8,7 +8,14 @@ pub struct Mesh {
 }
 
 impl Mesh {
-    pub fn draw(&self) {
+    pub fn draw(&self, textures: Vec<&Texture>) {
+        for (i, texture) in textures.iter().enumerate() {
+            unsafe {
+                gl::ActiveTexture(gl::TEXTURE0 + (i as u32));
+                gl::BindTexture(gl::TEXTURE_2D, texture.get_id());
+            }
+        }
+
         unsafe {
             gl::BindVertexArray(self.vao);
             gl::DrawElements(
