@@ -45,7 +45,7 @@ fn main() {
     ];
 
     let texture = Texture::from_image_bytes(
-        &include_bytes!("textures/container.jpg").to_vec(),
+        include_bytes!("textures/container.jpg"),
         image::ImageFormat::Jpeg,
     );
 

@@ -7,7 +7,7 @@ impl Texture {
         self.id
     }
 
-    pub fn from_image_bytes(image: &Vec<u8>, format: image::ImageFormat) -> Self {
+    pub fn from_image_bytes(image: &[u8], format: image::ImageFormat) -> Self {
         let mut texture = Texture { id: 0 };
 
         unsafe {
