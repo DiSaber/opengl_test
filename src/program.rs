@@ -1,11 +1,6 @@
-use std::ffi::{CStr, CString};
+use std::ffi::CString;
 
-use crate::{
-    shader::{Shader, ShaderType},
-    utils::WithLength,
-    vector2::Vector2,
-    vector3::Vector3,
-};
+use crate::{shader::Shader, utils::WithLength};
 
 pub struct Program {
     id: u32,
@@ -25,33 +20,7 @@ impl Program {
             ProgramValue::Float(float) => unsafe {
                 gl::Uniform1f(location, float);
             },
-            ProgramValue::Vec2(vec2) => unsafe {
-                gl::Uniform2f(location, vec2.x, vec2.y);
-            },
-            ProgramValue::Vec3(vec3) => unsafe {
-                gl::Uniform3f(location, vec3.x, vec3.y, vec3.z);
-            },
         };
-    }
-
-    pub fn from_material_source(material_source: &str) {
-        /*let vertex_shader = Shader::from_source(
-            &material_source.vertex_shader_source,
-            ShaderType::VertexShader,
-        )
-        .unwrap();
-
-        let fragment_shader = Shader::from_source(
-            &material_source.fragment_shader_source,
-            ShaderType::FragmentShader,
-        )
-        .unwrap();
-
-        let shader_program = Self::from_shaders(vec![&vertex_shader, &fragment_shader]).unwrap();
-
-        for (name, value) in &material_source.program_values {
-            shader_program.set_value(&name, *value)
-        }*/
     }
 
     pub fn from_shaders(
@@ -122,6 +91,4 @@ impl Drop for Program {
 #[derive(Clone, Copy)]
 pub enum ProgramValue {
     Float(f32),
-    Vec2(Vector2<f32>),
-    Vec3(Vector3<f32>),
 }

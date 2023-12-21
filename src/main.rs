@@ -1,17 +1,17 @@
-mod buffer;
 mod mesh;
 mod program;
 mod shader;
 mod utils;
 mod vector2;
 mod vector3;
+mod vertex;
 
-use buffer::Buffer;
 use glfw::Context;
 use mesh::Mesh;
 use program::{Program, ProgramValue};
 use shader::{Shader, ShaderType};
 use vector3::Vector3;
+use vertex::Vertex;
 
 extern crate gl;
 extern crate glfw;
@@ -34,47 +34,28 @@ fn main() {
         gl::Viewport(0, 0, width, height);
     });
 
-    let vertices = Buffer::new(
-        vec![
-            Vector3::new(0.5, 0.5, 0.0),
-            Vector3::new(0.5, -0.5, 0.0),
-            Vector3::new(-0.5, -0.5, 0.0),
-            Vector3::new(-0.5, 0.5, 0.0),
-        ]
-        .into_iter()
-        .flatten()
-        .collect(),
-        3,
-    );
-    let colors = Buffer::new(
-        vec![
-            Vector3::new(1.0, 0.0, 0.0),
-            Vector3::new(0.0, 1.0, 0.0),
-            Vector3::new(0.0, 0.0, 1.0),
-            Vector3::new(1.0, 1.0, 1.0),
-        ]
-        .into_iter()
-        .flatten()
-        .collect(),
-        3,
-    );
+    let vertices = vec![
+        Vertex::new(Vector3::new(0.5, 0.5, 0.0)),
+        Vertex::new(Vector3::new(0.5, -0.5, 0.0)),
+        Vertex::new(Vector3::new(-0.5, -0.5, 0.0)),
+        Vertex::new(Vector3::new(-0.5, 0.5, 0.0)),
+    ];
 
     let indices: Vec<u32> = vec![Vector3::new(0, 1, 3), Vector3::new(1, 2, 3)]
         .into_iter()
         .flatten()
         .collect();
 
-    // let mesh = Mesh::from_buffers(vec![vertices], indices).unwrap();
-    let color_mesh = Mesh::from_buffers(vec![vertices, colors], indices).unwrap();
+    let mesh = Mesh::from_buffer(vertices, indices).unwrap();
 
     let vertex_shader = Shader::from_source(
-        include_str!("shaders/triangle_color.vert"),
+        include_str!("shaders/triangle_uniform.vert"),
         ShaderType::VertexShader,
     )
     .unwrap();
 
     let fragment_shader = Shader::from_source(
-        include_str!("shaders/triangle_color.frag"),
+        include_str!("shaders/triangle_uniform.frag"),
         ShaderType::FragmentShader,
     )
     .unwrap();
@@ -92,11 +73,11 @@ fn main() {
         }
 
         shader_program.use_program();
-        /*shader_program.set_value(
-            &CString::new("colorScale").unwrap(),
+        shader_program.set_value(
+            "colorScale",
             ProgramValue::Float(((glfw.get_time().sin() / 2.0) + 0.5) as f32),
-        );*/
-        color_mesh.draw();
+        );
+        mesh.draw();
 
         window.swap_buffers();
         glfw.poll_events();

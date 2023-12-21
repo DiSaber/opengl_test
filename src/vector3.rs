@@ -5,9 +5,20 @@ pub struct Vector3<T> {
     pub z: T,
 }
 
-impl<T> Vector3<T> {
+impl<T> Vector3<T>
+where
+    T: Default,
+{
     pub fn new(x: T, y: T, z: T) -> Self {
         Vector3 { x, y, z }
+    }
+
+    pub fn default() -> Self {
+        Vector3 {
+            x: T::default(),
+            y: T::default(),
+            z: T::default(),
+        }
     }
 }
 

@@ -4,9 +4,19 @@ pub struct Vector2<T> {
     pub y: T,
 }
 
-impl<T> Vector2<T> {
+impl<T> Vector2<T>
+where
+    T: Default,
+{
     pub fn new(x: T, y: T) -> Self {
         Vector2 { x, y }
+    }
+
+    pub fn default() -> Self {
+        Vector2 {
+            x: T::default(),
+            y: T::default(),
+        }
     }
 }
 
