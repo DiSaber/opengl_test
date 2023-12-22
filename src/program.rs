@@ -14,11 +14,15 @@ impl Program {
     }
 
     pub fn set_value(&self, name: &str, value: ProgramValue) {
+        self.use_program();
         let name = CString::new(name).unwrap();
         let location = unsafe { gl::GetUniformLocation(self.id, name.as_ptr()) };
         match value {
             ProgramValue::Float(float) => unsafe {
                 gl::Uniform1f(location, float);
+            },
+            ProgramValue::Int(int) => unsafe {
+                gl::Uniform1i(location, int);
             },
         };
     }
@@ -89,4 +93,5 @@ impl Drop for Program {
 #[derive(Clone, Copy)]
 pub enum ProgramValue {
     Float(f32),
+    Int(i32),
 }

@@ -38,16 +38,11 @@ fn main() {
     });
 
     let vertices = vec![
-        Vertex::tex(Vector3::new(0.5, 0.5, 0.0), Vector2::new(1.0, 1.0)),
-        Vertex::tex(Vector3::new(0.5, -0.5, 0.0), Vector2::new(1.0, 0.0)),
-        Vertex::tex(Vector3::new(-0.5, -0.5, 0.0), Vector2::new(0.0, 0.0)),
-        Vertex::tex(Vector3::new(-0.5, 0.5, 0.0), Vector2::new(0.0, 1.0)),
+        Vertex::tex(Vector3::new(0.5, 0.5, 0.0), Vector2::new(1.0, 0.0)),
+        Vertex::tex(Vector3::new(0.5, -0.5, 0.0), Vector2::new(1.0, 1.0)),
+        Vertex::tex(Vector3::new(-0.5, -0.5, 0.0), Vector2::new(0.0, 1.0)),
+        Vertex::tex(Vector3::new(-0.5, 0.5, 0.0), Vector2::new(0.0, 0.0)),
     ];
-
-    let texture = Texture::from_image_bytes(
-        include_bytes!("textures/container.jpg"),
-        image::ImageFormat::Jpeg,
-    );
 
     let indices: Vec<u32> = vec![Vector3::new(0, 1, 3), Vector3::new(1, 2, 3)]
         .into_iter()
@@ -70,6 +65,13 @@ fn main() {
 
     let shader_program =
         Program::from_shaders(&vertex_shader, &fragment_shader, Vec::new()).unwrap();
+
+    let texture = Texture::from_image_bytes(
+        include_bytes!("textures/container.jpg"),
+        image::ImageFormat::Jpeg,
+    );
+
+    shader_program.set_value("texture1", ProgramValue::Int(0));
 
     while !window.should_close() {
         if window.get_key(glfw::Key::Escape) == glfw::Action::Press {
