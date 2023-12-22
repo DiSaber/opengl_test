@@ -87,3 +87,13 @@ impl Mesh {
         Ok(mesh)
     }
 }
+
+impl Drop for Mesh {
+    fn drop(&mut self) {
+        unsafe {
+            gl::DeleteBuffers(1, &self.vbo);
+            gl::DeleteBuffers(1, &self.ebo);
+            gl::DeleteVertexArrays(1, &self.vao);
+        }
+    }
+}
