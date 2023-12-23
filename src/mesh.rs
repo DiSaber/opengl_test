@@ -8,7 +8,7 @@ pub struct Mesh {
 }
 
 impl Mesh {
-    pub fn draw(&self, textures: Vec<&Texture>) {
+    pub fn draw(&self, textures: &[&Texture]) {
         for (i, texture) in textures.iter().enumerate() {
             unsafe {
                 gl::ActiveTexture(gl::TEXTURE0 + (i as u32));
@@ -27,7 +27,7 @@ impl Mesh {
         }
     }
 
-    pub fn from_buffer(object_buffer: Vec<f32>, indices: Vec<u32>) -> Result<Self, &'static str> {
+    pub fn from_buffer(object_buffer: &[f32], indices: &[u32]) -> Result<Self, &'static str> {
         let mut mesh = Mesh {
             vao: 0,
             vbo: 0,
