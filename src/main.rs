@@ -64,12 +64,8 @@ fn main() {
     )
     .unwrap();
 
-    let shader_program = Program::from_shaders(
-        &vertex_shader,
-        &fragment_shader,
-        &vec![("texture1", ProgramValue::Int(0))],
-    )
-    .unwrap();
+    let shader_program = Program::from_shaders(&vertex_shader, &fragment_shader).unwrap();
+    shader_program.set_value("texture1", ProgramValue::Int(0));
 
     let texture = Texture::from_image_bytes(
         include_bytes!("textures/container.jpg"),

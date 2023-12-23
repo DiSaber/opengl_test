@@ -27,11 +27,7 @@ impl Program {
         };
     }
 
-    pub fn from_shaders(
-        vertex_shader: &Shader,
-        fragment_shader: &Shader,
-        shader_values: &[(&str, ProgramValue)],
-    ) -> Result<Self, CString> {
+    pub fn from_shaders(vertex_shader: &Shader, fragment_shader: &Shader) -> Result<Self, CString> {
         let program = Program {
             id: unsafe { gl::CreateProgram() },
         };
@@ -72,10 +68,6 @@ impl Program {
         unsafe {
             gl::DetachShader(program.id, vertex_shader.get_id());
             gl::DetachShader(program.id, fragment_shader.get_id());
-        }
-
-        for (name, value) in shader_values {
-            program.set_value(name, *value)
         }
 
         Ok(program)
