@@ -27,7 +27,7 @@ impl Mesh {
         }
     }
 
-    pub fn from_buffer(object_buffer: Vec<f32>, indices: Vec<u32>) -> Result<Self, &'static str> {
+    pub fn from_buffer(object_buffer: &[f32], indices: &[u32]) -> Result<Self, &'static str> {
         let mut mesh = Mesh {
             vao: 0,
             vbo: 0,

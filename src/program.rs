@@ -30,7 +30,7 @@ impl Program {
     pub fn from_shaders(
         vertex_shader: &Shader,
         fragment_shader: &Shader,
-        shader_values: Vec<(&str, ProgramValue)>,
+        shader_values: &[(&str, ProgramValue)],
     ) -> Result<Self, CString> {
         let program = Program {
             id: unsafe { gl::CreateProgram() },
@@ -75,7 +75,7 @@ impl Program {
         }
 
         for (name, value) in shader_values {
-            program.set_value(name, value)
+            program.set_value(name, *value)
         }
 
         Ok(program)

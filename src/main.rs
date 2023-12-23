@@ -45,14 +45,14 @@ fn main() {
     ]
     .into_iter()
     .flatten()
-    .collect();
+    .collect::<Vec<f32>>();
 
-    let indices: Vec<u32> = vec![Vector3::new(0, 1, 3), Vector3::new(1, 2, 3)]
+    let indices = vec![Vector3::new(0, 1, 3), Vector3::new(1, 2, 3)]
         .into_iter()
         .flatten()
-        .collect();
+        .collect::<Vec<u32>>();
 
-    let mesh = Mesh::from_buffer(vertices, indices).unwrap();
+    let mesh = Mesh::from_buffer(&vertices, &indices).unwrap();
 
     let vertex_shader = Shader::from_source(
         include_bytes!("shaders/triangle_texture.vert"),
@@ -66,15 +66,17 @@ fn main() {
     )
     .unwrap();
 
-    let shader_program =
-        Program::from_shaders(&vertex_shader, &fragment_shader, Vec::new()).unwrap();
+    let shader_program = Program::from_shaders(
+        &vertex_shader,
+        &fragment_shader,
+        &vec![("texture1", ProgramValue::Int(0))],
+    )
+    .unwrap();
 
     let texture = Texture::from_image_bytes(
         include_bytes!("textures/container.jpg"),
         image::ImageFormat::Jpeg,
     );
-
-    shader_program.set_value("texture1", ProgramValue::Int(0));
 
     while !window.should_close() {
         if window.get_key(glfw::Key::Escape) == glfw::Action::Press {
