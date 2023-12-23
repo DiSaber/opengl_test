@@ -17,7 +17,7 @@ impl Shader {
         self.id
     }
 
-    pub fn from_source(shader_source: &str, shader_type: ShaderType) -> Result<Self, CString> {
+    pub fn from_source(shader_source: &[u8], shader_type: ShaderType) -> Result<Self, CString> {
         let shader_source = CString::new(shader_source).unwrap();
         let shader = Shader {
             id: unsafe { gl::CreateShader(shader_type as u32) },

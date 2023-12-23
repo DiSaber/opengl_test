@@ -52,13 +52,13 @@ fn main() {
     let mesh = Mesh::from_buffer(vertices, indices).unwrap();
 
     let vertex_shader = Shader::from_source(
-        include_str!("shaders/triangle_texture.vert"),
+        include_bytes!("shaders/triangle_texture.vert"),
         ShaderType::VertexShader,
     )
     .unwrap();
 
     let fragment_shader = Shader::from_source(
-        include_str!("shaders/triangle_texture.frag"),
+        include_bytes!("shaders/triangle_texture.frag"),
         ShaderType::FragmentShader,
     )
     .unwrap();
