@@ -1,3 +1,6 @@
+extern crate gl;
+extern crate glfw;
+
 mod mesh;
 mod program;
 mod shader;
@@ -15,9 +18,6 @@ use texture::Texture;
 use vector2::Vector2;
 use vector3::Vector3;
 use vertex::Vertex;
-
-extern crate gl;
-extern crate glfw;
 
 fn main() {
     let mut glfw = glfw::init(glfw::fail_on_errors).unwrap();
@@ -42,7 +42,10 @@ fn main() {
         Vertex::tex(Vector3::new(0.5, -0.5, 0.0), Vector2::new(1.0, 1.0)),
         Vertex::tex(Vector3::new(-0.5, -0.5, 0.0), Vector2::new(0.0, 1.0)),
         Vertex::tex(Vector3::new(-0.5, 0.5, 0.0), Vector2::new(0.0, 0.0)),
-    ];
+    ]
+    .into_iter()
+    .flatten()
+    .collect();
 
     let indices: Vec<u32> = vec![Vector3::new(0, 1, 3), Vector3::new(1, 2, 3)]
         .into_iter()

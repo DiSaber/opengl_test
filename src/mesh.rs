@@ -27,10 +27,7 @@ impl Mesh {
         }
     }
 
-    pub fn from_buffer(
-        object_buffer: Vec<Vertex>,
-        indices: Vec<u32>,
-    ) -> Result<Self, &'static str> {
+    pub fn from_buffer(object_buffer: Vec<f32>, indices: Vec<u32>) -> Result<Self, &'static str> {
         let mut mesh = Mesh {
             vao: 0,
             vbo: 0,
@@ -44,8 +41,6 @@ impl Mesh {
 
             gl::BindVertexArray(mesh.vao);
         }
-
-        let object_buffer: Vec<f32> = object_buffer.into_iter().flatten().collect();
 
         unsafe {
             gl::BindBuffer(gl::ARRAY_BUFFER, mesh.vbo);
