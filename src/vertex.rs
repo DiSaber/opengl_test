@@ -1,29 +1,21 @@
-use crate::{vector2::Vector2, vector3::Vector3};
+use glm::{Vec2, Vec3};
 
 pub struct Vertex {
-    pub position: Vector3<f32>,
-    pub normal: Vector3<f32>,
-    pub tex_coord: Vector2<f32>,
+    pub position: Vec3,
+    pub normal: Vec3,
+    pub tex_coord: Vec2,
 }
 
 impl Vertex {
-    pub fn pos(position: Vector3<f32>) -> Self {
+    pub fn tex(position: Vec3, tex_coord: Vec2) -> Self {
         Vertex {
             position,
-            normal: Vector3::default(),
-            tex_coord: Vector2::default(),
-        }
-    }
-
-    pub fn tex(position: Vector3<f32>, tex_coord: Vector2<f32>) -> Self {
-        Vertex {
-            position,
-            normal: Vector3::default(),
+            normal: Vec3::zeros(),
             tex_coord,
         }
     }
 
-    pub fn vec_size() -> usize {
+    pub fn c_size() -> usize {
         Self::lengths().iter().sum::<usize>() * std::mem::size_of::<f32>()
     }
 

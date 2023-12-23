@@ -60,7 +60,7 @@ impl Mesh {
             );
         }
 
-        let stride = Vertex::vec_size();
+        let stride = Vertex::c_size();
         let mut offset = 0;
 
         for (i, length) in Vertex::lengths().iter().enumerate() {

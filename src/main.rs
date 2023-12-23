@@ -1,13 +1,12 @@
 extern crate gl;
 extern crate glfw;
+extern crate nalgebra_glm as glm;
 
 mod mesh;
 mod program;
 mod shader;
 mod texture;
 mod utils;
-mod vector2;
-mod vector3;
 mod vertex;
 
 use glfw::Context;
@@ -15,8 +14,6 @@ use mesh::Mesh;
 use program::{Program, ProgramValue};
 use shader::{Shader, ShaderType};
 use texture::Texture;
-use vector2::Vector2;
-use vector3::Vector3;
 use vertex::Vertex;
 
 fn main() {
@@ -38,18 +35,19 @@ fn main() {
     });
 
     let vertices = vec![
-        Vertex::tex(Vector3::new(0.5, 0.5, 0.0), Vector2::new(1.0, 0.0)),
-        Vertex::tex(Vector3::new(0.5, -0.5, 0.0), Vector2::new(1.0, 1.0)),
-        Vertex::tex(Vector3::new(-0.5, -0.5, 0.0), Vector2::new(0.0, 1.0)),
-        Vertex::tex(Vector3::new(-0.5, 0.5, 0.0), Vector2::new(0.0, 0.0)),
+        Vertex::tex(glm::vec3(0.5, 0.5, 0.0), glm::vec2(1.0, 0.0)),
+        Vertex::tex(glm::vec3(0.5, -0.5, 0.0), glm::vec2(1.0, 1.0)),
+        Vertex::tex(glm::vec3(-0.5, -0.5, 0.0), glm::vec2(0.0, 1.0)),
+        Vertex::tex(glm::vec3(-0.5, 0.5, 0.0), glm::vec2(0.0, 0.0)),
     ]
     .into_iter()
     .flatten()
     .collect::<Vec<f32>>();
 
-    let indices = vec![Vector3::new(0, 1, 3), Vector3::new(1, 2, 3)]
+    let indices = vec![glm::vec3(0, 1, 3).as_slice(), glm::vec3(1, 2, 3).as_slice()]
         .into_iter()
         .flatten()
+        .cloned()
         .collect::<Vec<u32>>();
 
     let mesh = Mesh::from_buffer(&vertices, &indices);
