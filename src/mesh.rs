@@ -27,7 +27,7 @@ impl Mesh {
         }
     }
 
-    pub fn from_buffer(object_buffer: &[f32], indices: &[u32]) -> Result<Self, &'static str> {
+    pub fn from_buffer(object_buffer: &[f32], indices: &[u32]) -> Self {
         let mut mesh = Mesh {
             vao: 0,
             vbo: 0,
@@ -79,7 +79,7 @@ impl Mesh {
             offset += length * std::mem::size_of::<f32>();
         }
 
-        Ok(mesh)
+        mesh
     }
 }
 

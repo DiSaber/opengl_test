@@ -52,7 +52,7 @@ fn main() {
         .flatten()
         .collect::<Vec<u32>>();
 
-    let mesh = Mesh::from_buffer(&vertices, &indices).unwrap();
+    let mesh = Mesh::from_buffer(&vertices, &indices);
 
     let vertex_shader = Shader::from_source(
         include_bytes!("shaders/triangle_texture.vert"),
