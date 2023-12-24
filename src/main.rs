@@ -44,8 +44,8 @@ fn main() {
     .flatten()
     .collect::<Vec<f32>>();
 
-    let indices = vec![glm::vec3(0, 1, 3).as_slice(), glm::vec3(1, 2, 3).as_slice()]
-        .into_iter()
+    let indices = vec![glm::vec3(0, 1, 3), glm::vec3(1, 2, 3)]
+        .iter()
         .flatten()
         .cloned()
         .collect::<Vec<u32>>();

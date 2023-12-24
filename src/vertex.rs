@@ -30,15 +30,14 @@ impl IntoIterator for Vertex {
 
     fn into_iter(self) -> Self::IntoIter {
         vec![
-            self.position.x,
-            self.position.y,
-            self.position.z,
-            self.normal.x,
-            self.normal.y,
-            self.normal.z,
-            self.tex_coord.x,
-            self.tex_coord.y,
+            glm::value_ptr(&self.position),
+            glm::value_ptr(&self.normal),
+            glm::value_ptr(&self.tex_coord),
         ]
+        .into_iter()
+        .flatten()
+        .cloned()
+        .collect::<Vec<f32>>()
         .into_iter()
     }
 }
