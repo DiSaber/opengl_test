@@ -67,6 +67,8 @@ fn main() {
     let shader_program = Program::from_shaders(&vertex_shader, &fragment_shader).unwrap();
     shader_program.set_value("texture1", ProgramValue::Int(0));
 
+    shader_program.set_value("transform", ProgramValue::Mat4(glm::identity()));
+
     let texture = Texture::from_image_bytes(
         include_bytes!("textures/container.jpg"),
         image::ImageFormat::Jpeg,
@@ -87,6 +89,13 @@ fn main() {
             "colorScale",
             ProgramValue::Float(((glfw.get_time().sin() / 2.0) + 0.5) as f32),
         );*/
+        let mut transform: glm::Mat4 = glm::identity();
+        transform = glm::rotate(
+            &transform,
+            glfw.get_time() as f32,
+            &glm::vec3(0.0, 0.0, 1.0),
+        );
+        shader_program.set_value("transform", ProgramValue::Mat4(transform));
         mesh.draw(&vec![&texture]);
 
         window.swap_buffers();

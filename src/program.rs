@@ -24,6 +24,14 @@ impl Program {
             ProgramValue::Int(int) => unsafe {
                 gl::Uniform1i(location, int);
             },
+            ProgramValue::Mat4(mat) => unsafe {
+                gl::UniformMatrix4fv(
+                    location,
+                    1,
+                    gl::FALSE,
+                    glm::value_ptr(&mat).as_ptr() as *const f32,
+                )
+            },
         };
     }
 
@@ -86,4 +94,5 @@ impl Drop for Program {
 pub enum ProgramValue {
     Float(f32),
     Int(i32),
+    Mat4(glm::Mat4),
 }
