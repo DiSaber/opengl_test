@@ -1,4 +1,5 @@
 use crate::{
+    camera::Camera,
     mesh::Mesh,
     program::{Program, ProgramValue},
     texture::Texture,
@@ -28,16 +29,19 @@ impl<'a> MeshObject<'a> {
             )
         }
 
-        mesh_object.set_shader_value(
-            "transform",
-            ProgramValue::Mat4(mesh_object.transform.to_matrix()),
-        );
-
         mesh_object
     }
 
-    pub fn draw(&self) {
-        self.set_shader_value("transform", ProgramValue::Mat4(self.transform.to_matrix()));
+    pub fn draw(&self, camera: &Camera) {
+        self.set_shader_value(
+            "transform",
+            ProgramValue::Mat4(self.transform.to_matrix(false)),
+        );
+        self.set_shader_value(
+            "camera_transform",
+            ProgramValue::Mat4(camera.transform.to_matrix(true)),
+        );
+        self.set_shader_value("camera_projection", ProgramValue::Mat4(camera.projection));
         self.mesh.draw(&self.textures);
     }
 

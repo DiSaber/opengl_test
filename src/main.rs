@@ -2,6 +2,7 @@ extern crate gl;
 extern crate glfw;
 extern crate nalgebra_glm as glm;
 
+mod camera;
 mod mesh;
 mod mesh_object;
 mod program;
@@ -11,10 +12,11 @@ mod transform;
 mod utils;
 mod vertex;
 
+use camera::Camera;
 use glfw::Context;
 use mesh::Mesh;
 use mesh_object::MeshObject;
-use program::{Program, ProgramValue};
+use program::Program;
 use shader::{Shader, ShaderType};
 use texture::Texture;
 use vertex::Vertex;
@@ -32,6 +34,19 @@ fn main() {
 
     window.make_current();
     gl::load_with(|s| window.get_proc_address(s));
+
+    unsafe {
+        gl::Enable(gl::DEPTH_TEST);
+    }
+
+    let mut main_camera = Camera::new(glm::perspective_fov(
+        90f32.to_radians(),
+        window.get_framebuffer_size().0 as f32,
+        window.get_framebuffer_size().1 as f32,
+        0.3,
+        100.0,
+    ));
+    main_camera.transform.position = glm::vec3(0.0, 0.0, 1.0);
 
     window.set_framebuffer_size_callback(|_, width, height| unsafe {
         gl::Viewport(0, 0, width, height);
@@ -83,7 +98,7 @@ fn main() {
 
         unsafe {
             gl::ClearColor(0.2, 0.3, 0.3, 1.0);
-            gl::Clear(gl::COLOR_BUFFER_BIT);
+            gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
         }
 
         mesh_object.transform = Default::default();
@@ -94,7 +109,7 @@ fn main() {
         );
         mesh_object.transform.position = glm::vec3(0.5, 0.0, 0.0);
         mesh_object.transform.scale = glm::vec3(0.5, 0.5, 0.5);
-        mesh_object.draw();
+        main_camera.draw_objects(&[&mesh_object]);
 
         window.swap_buffers();
         glfw.poll_events();

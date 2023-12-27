@@ -6,9 +6,14 @@ pub struct Transform {
 }
 
 impl Transform {
-    pub fn to_matrix(&self) -> glm::Mat4 {
+    pub fn to_matrix(&self, invert_position: bool) -> glm::Mat4 {
         let mut transform: glm::Mat4 = glm::identity();
-        transform = glm::translate(&transform, &self.position);
+        let position = if invert_position {
+            -self.position
+        } else {
+            self.position
+        };
+        transform = glm::translate(&transform, &position);
         let normalized_rotation = glm::quat_normalize(&self.rotation);
         transform = glm::rotate(
             &transform,
