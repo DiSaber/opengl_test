@@ -3,14 +3,17 @@ extern crate glfw;
 extern crate nalgebra_glm as glm;
 
 mod mesh;
+mod mesh_object;
 mod program;
 mod shader;
 mod texture;
+mod transform;
 mod utils;
 mod vertex;
 
 use glfw::Context;
 use mesh::Mesh;
+use mesh_object::MeshObject;
 use program::{Program, ProgramValue};
 use shader::{Shader, ShaderType};
 use texture::Texture;
@@ -65,14 +68,13 @@ fn main() {
     .unwrap();
 
     let shader_program = Program::from_shaders(&vertex_shader, &fragment_shader).unwrap();
-    shader_program.set_value("texture1", ProgramValue::Int(0));
-
-    shader_program.set_value("transform", ProgramValue::Mat4(glm::identity()));
 
     let texture = Texture::from_image_bytes(
         include_bytes!("textures/container.jpg"),
         image::ImageFormat::Jpeg,
     );
+
+    let mut mesh_object = MeshObject::new(&mesh, &[&texture], &shader_program);
 
     while !window.should_close() {
         if window.get_key(glfw::Key::Escape) == glfw::Action::Press {
@@ -84,19 +86,15 @@ fn main() {
             gl::Clear(gl::COLOR_BUFFER_BIT);
         }
 
-        shader_program.use_program();
-        /*shader_program.set_value(
-            "colorScale",
-            ProgramValue::Float(((glfw.get_time().sin() / 2.0) + 0.5) as f32),
-        );*/
-        let mut transform: glm::Mat4 = glm::identity();
-        transform = glm::rotate(
-            &transform,
+        mesh_object.transform = Default::default();
+        mesh_object.transform.rotation = glm::quat_rotate(
+            &mesh_object.transform.rotation,
             glfw.get_time() as f32,
             &glm::vec3(0.0, 0.0, 1.0),
         );
-        shader_program.set_value("transform", ProgramValue::Mat4(transform));
-        mesh.draw(&vec![&texture]);
+        mesh_object.transform.position = glm::vec3(0.5, 0.0, 0.0);
+        mesh_object.transform.scale = glm::vec3(0.5, 0.5, 0.5);
+        mesh_object.draw();
 
         window.swap_buffers();
         glfw.poll_events();
