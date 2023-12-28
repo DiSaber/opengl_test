@@ -12,6 +12,8 @@ mod transform;
 mod utils;
 mod vertex;
 
+use std::{collections::HashMap, fs};
+
 use camera::Camera;
 use glfw::Context;
 use mesh::Mesh;
@@ -43,6 +45,11 @@ fn main() {
         gl::Viewport(0, 0, width, height);
     });
 
+    let exe_path = std::env::current_exe().unwrap();
+    let exe_dir = exe_path.parent().unwrap();
+    let resources: HashMap<String, Vec<u8>> =
+        bincode::deserialize(&fs::read(exe_dir.join("resources.pck")).unwrap()).unwrap();
+
     let vertices = vec![
         Vertex::tex(glm::vec3(0.5, 0.5, 0.0), glm::vec2(1.0, 0.0)),
         Vertex::tex(glm::vec3(0.5, -0.5, 0.0), glm::vec2(1.0, 1.0)),
@@ -62,23 +69,20 @@ fn main() {
     let mesh = Mesh::from_buffer(&vertices, &indices);
 
     let vertex_shader = Shader::from_source(
-        include_bytes!("shaders/triangle_texture.vert"),
+        &resources["triangle_texture.vert"],
         ShaderType::VertexShader,
     )
     .unwrap();
 
     let fragment_shader = Shader::from_source(
-        include_bytes!("shaders/triangle_texture.frag"),
+        &resources["triangle_texture.frag"],
         ShaderType::FragmentShader,
     )
     .unwrap();
 
     let shader_program = ShaderProgram::from_shaders(&vertex_shader, &fragment_shader).unwrap();
 
-    let texture = Texture::from_image_bytes(
-        include_bytes!("textures/container.jpg"),
-        image::ImageFormat::Jpeg,
-    );
+    let texture = Texture::from_image_bytes(&resources["container.jpg"], image::ImageFormat::Jpeg);
 
     let mut main_camera = Camera::new(
         90.0,
