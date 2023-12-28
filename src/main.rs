@@ -91,6 +91,9 @@ fn main() {
 
     let mut mesh_object = MeshObject::new(&mesh, &[&texture], &shader_program);
     mesh_object.transform.position = glm::vec3(0.0, -0.5, 0.0);
+    let mut mesh_object2 = MeshObject::new(&mesh, &[&texture], &shader_program);
+    mesh_object2.transform.position = glm::vec3(0.0, -0.5, 2.0);
+
     let mut floor_object = MeshObject::new(&mesh, &[&texture], &shader_program);
     floor_object.transform.rotation = glm::quat_rotate(
         &glm::quat_identity(),
@@ -123,7 +126,12 @@ fn main() {
             glfw.get_time() as f32,
             &glm::vec3(0.0, 0.0, 1.0),
         );
-        main_camera.draw_objects(&[&mesh_object, &floor_object]);
+        mesh_object2.transform.rotation = glm::quat_rotate(
+            &glm::quat_identity(),
+            glfw.get_time() as f32,
+            &glm::vec3(0.0, 0.0, 1.0),
+        );
+        main_camera.draw_objects(&[&mesh_object, &floor_object, &mesh_object2]);
 
         window.swap_buffers();
         glfw.poll_events();
