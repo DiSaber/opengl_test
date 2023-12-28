@@ -42,4 +42,8 @@ impl Camera {
             self.far_clipping_plane,
         )
     }
+
+    pub fn get_transform_matrix(&self) -> glm::Mat4 {
+        self.transform.to_matrix(true)
+    }
 }

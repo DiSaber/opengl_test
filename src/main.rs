@@ -121,7 +121,7 @@ fn main() {
         mesh_object.transform.rotation = glm::quat_rotate(
             &glm::quat_identity(),
             glfw.get_time() as f32,
-            &glm::vec3(0.0, 0.0, -1.0),
+            &glm::vec3(0.0, 0.0, 1.0),
         );
         main_camera.draw_objects(&[&mesh_object, &floor_object]);
 

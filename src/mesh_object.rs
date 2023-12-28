@@ -37,13 +37,10 @@ impl<'a> MeshObject<'a> {
     }
 
     pub fn draw(&self, camera: &Camera) {
-        self.set_shader_value(
-            "transform",
-            ProgramValue::Mat4(self.transform.to_matrix(false)),
-        );
+        self.set_shader_value("transform", ProgramValue::Mat4(self.get_transform_matrix()));
         self.set_shader_value(
             "camera_transform",
-            ProgramValue::Mat4(camera.transform.to_matrix(true)),
+            ProgramValue::Mat4(camera.get_transform_matrix()),
         );
         self.set_shader_value(
             "camera_projection",
@@ -54,5 +51,9 @@ impl<'a> MeshObject<'a> {
 
     pub fn set_shader_value(&self, name: &str, value: ProgramValue) {
         self.shader_program.set_value(name, value)
+    }
+
+    pub fn get_transform_matrix(&self) -> glm::Mat4 {
+        self.transform.to_matrix(false)
     }
 }
