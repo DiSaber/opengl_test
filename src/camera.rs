@@ -2,14 +2,28 @@ use crate::{mesh_object::MeshObject, transform::Transform};
 
 pub struct Camera {
     pub transform: Transform,
-    pub projection: glm::Mat4,
+    pub fov: f32,
+    pub screen_width: i32,
+    pub screen_height: i32,
+    pub near_clipping_plane: f32,
+    pub far_clipping_plane: f32,
 }
 
 impl Camera {
-    pub fn new(projection: glm::Mat4) -> Camera {
+    pub fn new(
+        fov: f32,
+        screen_width: i32,
+        screen_height: i32,
+        near_clipping_plane: f32,
+        far_clipping_plane: f32,
+    ) -> Camera {
         Camera {
             transform: Default::default(),
-            projection,
+            fov,
+            screen_width,
+            screen_height,
+            near_clipping_plane,
+            far_clipping_plane,
         }
     }
 
@@ -17,5 +31,15 @@ impl Camera {
         for object in objects {
             object.draw(self);
         }
+    }
+
+    pub fn get_projection_matrix(&self) -> glm::Mat4 {
+        glm::perspective_fov(
+            self.fov.to_radians(),
+            self.screen_width as f32,
+            self.screen_height as f32,
+            self.near_clipping_plane,
+            self.far_clipping_plane,
+        )
     }
 }

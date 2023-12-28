@@ -2,11 +2,11 @@ use std::ffi::CString;
 
 use crate::{shader::Shader, utils::WithLength};
 
-pub struct Program {
+pub struct ShaderProgram {
     id: u32,
 }
 
-impl Program {
+impl ShaderProgram {
     pub fn use_program(&self) {
         unsafe {
             gl::UseProgram(self.id);
@@ -36,7 +36,7 @@ impl Program {
     }
 
     pub fn from_shaders(vertex_shader: &Shader, fragment_shader: &Shader) -> Result<Self, CString> {
-        let program = Program {
+        let program = Self {
             id: unsafe { gl::CreateProgram() },
         };
 
@@ -82,7 +82,7 @@ impl Program {
     }
 }
 
-impl Drop for Program {
+impl Drop for ShaderProgram {
     fn drop(&mut self) {
         unsafe {
             gl::DeleteProgram(self.id);

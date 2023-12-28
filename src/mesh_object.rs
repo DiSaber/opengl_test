@@ -1,7 +1,7 @@
 use crate::{
     camera::Camera,
     mesh::Mesh,
-    program::{Program, ProgramValue},
+    program::{ProgramValue, ShaderProgram},
     texture::Texture,
     transform::Transform,
 };
@@ -9,12 +9,16 @@ use crate::{
 pub struct MeshObject<'a> {
     mesh: &'a Mesh,
     textures: Vec<&'a Texture>,
-    shader_program: &'a Program,
+    shader_program: &'a ShaderProgram,
     pub transform: Transform,
 }
 
 impl<'a> MeshObject<'a> {
-    pub fn new(mesh: &'a Mesh, textures: &[&'a Texture], shader_program: &'a Program) -> Self {
+    pub fn new(
+        mesh: &'a Mesh,
+        textures: &[&'a Texture],
+        shader_program: &'a ShaderProgram,
+    ) -> Self {
         let mesh_object = MeshObject {
             mesh,
             textures: Vec::from(textures),
@@ -41,7 +45,10 @@ impl<'a> MeshObject<'a> {
             "camera_transform",
             ProgramValue::Mat4(camera.transform.to_matrix(true)),
         );
-        self.set_shader_value("camera_projection", ProgramValue::Mat4(camera.projection));
+        self.set_shader_value(
+            "camera_projection",
+            ProgramValue::Mat4(camera.get_projection_matrix()),
+        );
         self.mesh.draw(&self.textures);
     }
 

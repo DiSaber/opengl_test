@@ -16,7 +16,7 @@ use camera::Camera;
 use glfw::Context;
 use mesh::Mesh;
 use mesh_object::MeshObject;
-use program::Program;
+use program::ShaderProgram;
 use shader::{Shader, ShaderType};
 use texture::Texture;
 use vertex::Vertex;
@@ -38,15 +38,6 @@ fn main() {
     unsafe {
         gl::Enable(gl::DEPTH_TEST);
     }
-
-    let mut main_camera = Camera::new(glm::perspective_fov(
-        90f32.to_radians(),
-        window.get_framebuffer_size().0 as f32,
-        window.get_framebuffer_size().1 as f32,
-        0.3,
-        100.0,
-    ));
-    main_camera.transform.position = glm::vec3(0.0, 0.0, 1.0);
 
     window.set_framebuffer_size_callback(|_, width, height| unsafe {
         gl::Viewport(0, 0, width, height);
@@ -82,14 +73,32 @@ fn main() {
     )
     .unwrap();
 
-    let shader_program = Program::from_shaders(&vertex_shader, &fragment_shader).unwrap();
+    let shader_program = ShaderProgram::from_shaders(&vertex_shader, &fragment_shader).unwrap();
 
     let texture = Texture::from_image_bytes(
         include_bytes!("textures/container.jpg"),
         image::ImageFormat::Jpeg,
     );
 
+    let mut main_camera = Camera::new(
+        90.0,
+        window.get_framebuffer_size().0,
+        window.get_framebuffer_size().1,
+        0.3,
+        100.0,
+    );
+    main_camera.transform.position = glm::vec3(0.0, 0.0, -1.0);
+
     let mut mesh_object = MeshObject::new(&mesh, &[&texture], &shader_program);
+    mesh_object.transform.position = glm::vec3(0.0, -0.5, 0.0);
+    let mut floor_object = MeshObject::new(&mesh, &[&texture], &shader_program);
+    floor_object.transform.rotation = glm::quat_rotate(
+        &glm::quat_identity(),
+        90.0_f32.to_radians(),
+        &glm::vec3(1.0, 0.0, 0.0),
+    );
+    floor_object.transform.position = glm::vec3(0.0, -0.5, 0.0);
+    floor_object.transform.scale = glm::vec3(5.0, 5.0, 5.0);
 
     while !window.should_close() {
         if window.get_key(glfw::Key::Escape) == glfw::Action::Press {
@@ -101,15 +110,20 @@ fn main() {
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
         }
 
-        mesh_object.transform = Default::default();
-        mesh_object.transform.rotation = glm::quat_rotate(
-            &mesh_object.transform.rotation,
+        main_camera.screen_width = window.get_framebuffer_size().0;
+        main_camera.screen_height = window.get_framebuffer_size().1;
+        main_camera.transform.rotation = glm::quat_rotate(
+            &glm::quat_identity(),
             glfw.get_time() as f32,
-            &glm::vec3(0.0, 0.0, 1.0),
+            &glm::vec3(0.0, 1.0, 0.0),
         );
-        mesh_object.transform.position = glm::vec3(0.5, 0.0, 0.0);
-        mesh_object.transform.scale = glm::vec3(0.5, 0.5, 0.5);
-        main_camera.draw_objects(&[&mesh_object]);
+
+        mesh_object.transform.rotation = glm::quat_rotate(
+            &glm::quat_identity(),
+            glfw.get_time() as f32,
+            &glm::vec3(0.0, 0.0, -1.0),
+        );
+        main_camera.draw_objects(&[&mesh_object, &floor_object]);
 
         window.swap_buffers();
         glfw.poll_events();

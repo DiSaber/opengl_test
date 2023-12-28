@@ -4,7 +4,7 @@ pub struct Mesh {
     vao: u32,
     vbo: u32,
     ebo: u32,
-    total_vertices: i32,
+    total_indices: i32,
 }
 
 impl Mesh {
@@ -20,7 +20,7 @@ impl Mesh {
             gl::BindVertexArray(self.vao);
             gl::DrawElements(
                 gl::TRIANGLES,
-                self.total_vertices,
+                self.total_indices,
                 gl::UNSIGNED_INT,
                 0 as *const std::ffi::c_void,
             )
@@ -32,7 +32,7 @@ impl Mesh {
             vao: 0,
             vbo: 0,
             ebo: 0,
-            total_vertices: indices.len() as i32,
+            total_indices: indices.len() as i32,
         };
         unsafe {
             gl::GenBuffers(1, &mut mesh.vbo);
