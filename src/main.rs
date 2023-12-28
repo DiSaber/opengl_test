@@ -87,7 +87,7 @@ fn main() {
         0.3,
         100.0,
     );
-    main_camera.transform.position = glm::vec3(0.0, 0.0, -1.0);
+    main_camera.transform.position = glm::vec3(0.0, 0.0, 1.0);
 
     let mut mesh_object = MeshObject::new(&mesh, &[&texture], &shader_program);
     mesh_object.transform.position = glm::vec3(0.0, -0.5, 0.0);

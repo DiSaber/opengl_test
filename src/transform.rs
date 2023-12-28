@@ -10,7 +10,7 @@ impl Transform {
         let position = glm::translate(
             &glm::identity(),
             &if is_camera {
-                glm::vec3(-self.position.x, -self.position.y, self.position.z)
+                -self.position
             } else {
                 self.position
             },
