@@ -12,7 +12,7 @@ mod transform;
 mod utils;
 mod vertex;
 
-use std::{collections::HashMap, fs};
+use std::{collections::HashMap, fs, io::BufReader};
 
 use camera::Camera;
 use glfw::Context;
@@ -49,6 +49,28 @@ fn main() {
     let exe_dir = exe_path.parent().unwrap();
     let resources: HashMap<String, Vec<u8>> =
         bincode::deserialize(&fs::read(exe_dir.join("resources.pck")).unwrap()).unwrap();
+
+    let (models, materials) = tobj::load_obj_buf(
+        &mut BufReader::new(resources["slope.obj"].as_slice()),
+        &tobj::GPU_LOAD_OPTIONS,
+        |path| {
+            tobj::load_mtl_buf(&mut if let Some(mtl) =
+                resources.get(path.file_name().unwrap().to_str().unwrap())
+            {
+                BufReader::new(mtl.as_slice())
+            } else {
+                BufReader::new(&[] as &[u8])
+            })
+        },
+    )
+    .unwrap();
+
+    let slope_mesh = Mesh::from_tobj_buffer(
+        &models[0].mesh.positions,
+        &models[0].mesh.normals,
+        &models[0].mesh.texcoords,
+        &models[0].mesh.indices,
+    );
 
     let vertices = vec![
         Vertex::tex(glm::vec3(0.5, 0.5, 0.0), glm::vec2(1.0, 0.0)),
@@ -94,9 +116,17 @@ fn main() {
     main_camera.transform.position = glm::vec3(0.0, 0.0, 1.0);
 
     let mut mesh_object = MeshObject::new(&mesh, &[&texture], &shader_program);
-    mesh_object.transform.position = glm::vec3(0.0, -0.5, 0.0);
+    mesh_object.transform.position = glm::vec3(-1.0, -0.5, 0.0);
     let mut mesh_object2 = MeshObject::new(&mesh, &[&texture], &shader_program);
     mesh_object2.transform.position = glm::vec3(0.0, -0.5, 2.0);
+
+    let mut slope_object = MeshObject::new(&slope_mesh, &[&texture], &shader_program);
+    slope_object.transform.position = glm::vec3(0.0, 0.0, -1.0);
+    slope_object.transform.rotation = glm::quat_rotate(
+        &glm::quat_identity(),
+        135.0_f32.to_radians(),
+        &glm::vec3(0.0, 1.0, 0.0),
+    );
 
     let mut floor_object = MeshObject::new(&mesh, &[&texture], &shader_program);
     floor_object.transform.rotation = glm::quat_rotate(
@@ -135,7 +165,7 @@ fn main() {
             glfw.get_time() as f32,
             &glm::vec3(0.0, 0.0, 1.0),
         );
-        main_camera.draw_objects(&[&mesh_object, &floor_object, &mesh_object2]);
+        main_camera.draw_objects(&[&mesh_object, &floor_object, &mesh_object2, &slope_object]);
 
         window.swap_buffers();
         glfw.poll_events();

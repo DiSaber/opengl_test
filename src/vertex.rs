@@ -7,6 +7,14 @@ pub struct Vertex {
 }
 
 impl Vertex {
+    pub fn new(position: Vec3, normal: Vec3, tex_coord: Vec2) -> Self {
+        Vertex {
+            position,
+            normal,
+            tex_coord,
+        }
+    }
+
     pub fn tex(position: Vec3, tex_coord: Vec2) -> Self {
         Vertex {
             position,

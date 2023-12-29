@@ -27,6 +27,33 @@ impl Mesh {
         }
     }
 
+    pub fn from_tobj_buffer(
+        positions: &[f32],
+        normals: &[f32],
+        tex_coords: &[f32],
+        indices: &[u32],
+    ) -> Self {
+        let vertices = (0..(positions.len() / 3))
+            .map(|i| {
+                Vertex::new(
+                    glm::vec3(positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2]),
+                    if normals.is_empty() {
+                        glm::Vec3::zeros()
+                    } else {
+                        glm::vec3(normals[i * 3], normals[i * 3 + 1], normals[i * 3 + 2])
+                    },
+                    if tex_coords.is_empty() {
+                        glm::Vec2::zeros()
+                    } else {
+                        glm::vec2(tex_coords[i * 2], tex_coords[i * 2 + 1])
+                    },
+                )
+            })
+            .flatten()
+            .collect::<Vec<f32>>();
+        Self::from_buffer(&vertices, indices)
+    }
+
     pub fn from_buffer(object_buffer: &[f32], indices: &[u32]) -> Self {
         let mut mesh = Mesh {
             vao: 0,
