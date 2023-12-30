@@ -50,7 +50,7 @@ fn main() {
     let resources: HashMap<String, Vec<u8>> =
         bincode::deserialize(&fs::read(exe_dir.join("resources.pck")).unwrap()).unwrap();
 
-    let (models, materials) = tobj::load_obj_buf(
+    let (models, _) = tobj::load_obj_buf(
         &mut BufReader::new(resources["slope.obj"].as_slice()),
         &tobj::GPU_LOAD_OPTIONS,
         |path| {
@@ -65,30 +65,17 @@ fn main() {
     )
     .unwrap();
 
-    let slope_mesh = Mesh::from_tobj_buffer(
-        &models[0].mesh.positions,
-        &models[0].mesh.normals,
-        &models[0].mesh.texcoords,
-        &models[0].mesh.indices,
-    );
+    let slope_mesh = Mesh::from_tobj(&models[0].mesh);
 
     let vertices = vec![
         Vertex::tex(glm::vec3(0.5, 0.5, 0.0), glm::vec2(1.0, 0.0)),
         Vertex::tex(glm::vec3(0.5, -0.5, 0.0), glm::vec2(1.0, 1.0)),
         Vertex::tex(glm::vec3(-0.5, -0.5, 0.0), glm::vec2(0.0, 1.0)),
         Vertex::tex(glm::vec3(-0.5, 0.5, 0.0), glm::vec2(0.0, 0.0)),
-    ]
-    .into_iter()
-    .flatten()
-    .collect::<Vec<f32>>();
+    ];
+    let faces = vec![glm::vec3(0, 1, 3), glm::vec3(1, 2, 3)];
 
-    let indices = vec![glm::vec3(0, 1, 3), glm::vec3(1, 2, 3)]
-        .iter()
-        .flatten()
-        .cloned()
-        .collect::<Vec<u32>>();
-
-    let mesh = Mesh::from_buffer(&vertices, &indices);
+    let mesh = Mesh::from_vertices(vertices, faces);
 
     let vertex_shader = Shader::from_source(
         &resources["triangle_texture.vert"],

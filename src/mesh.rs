@@ -27,34 +27,49 @@ impl Mesh {
         }
     }
 
-    pub fn from_tobj_buffer(
-        positions: &[f32],
-        normals: &[f32],
-        tex_coords: &[f32],
-        indices: &[u32],
-    ) -> Self {
-        let vertices = (0..(positions.len() / 3))
+    pub fn from_tobj(obj: &tobj::Mesh) -> Self {
+        let vertices = (0..(obj.positions.len() / 3))
             .map(|i| {
                 Vertex::new(
-                    glm::vec3(positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2]),
-                    if normals.is_empty() {
+                    glm::vec3(
+                        obj.positions[i * 3],
+                        obj.positions[i * 3 + 1],
+                        obj.positions[i * 3 + 2],
+                    ),
+                    if obj.normals.is_empty() {
                         glm::Vec3::zeros()
                     } else {
-                        glm::vec3(normals[i * 3], normals[i * 3 + 1], normals[i * 3 + 2])
+                        glm::vec3(
+                            obj.normals[i * 3],
+                            obj.normals[i * 3 + 1],
+                            obj.normals[i * 3 + 2],
+                        )
                     },
-                    if tex_coords.is_empty() {
+                    if obj.texcoords.is_empty() {
                         glm::Vec2::zeros()
                     } else {
-                        glm::vec2(tex_coords[i * 2], tex_coords[i * 2 + 1])
+                        glm::vec2(obj.texcoords[i * 2], obj.texcoords[i * 2 + 1])
                     },
                 )
             })
-            .flatten()
-            .collect::<Vec<f32>>();
-        Self::from_buffer(&vertices, indices)
+            .collect::<Vec<Vertex>>();
+        let faces = (0..(obj.indices.len() / 3))
+            .map(|i| {
+                glm::vec3(
+                    obj.indices[i * 3],
+                    obj.indices[i * 3 + 1],
+                    obj.indices[i * 3 + 2],
+                )
+            })
+            .collect::<Vec<glm::TVec3<u32>>>();
+
+        Self::from_vertices(vertices, faces)
     }
 
-    pub fn from_buffer(object_buffer: &[f32], indices: &[u32]) -> Self {
+    pub fn from_vertices(vertices: Vec<Vertex>, faces: Vec<glm::TVec3<u32>>) -> Self {
+        let object_buffer = vertices.into_iter().flatten().collect::<Vec<f32>>();
+        let indices = faces.iter().flatten().cloned().collect::<Vec<u32>>();
+
         let mut mesh = Mesh {
             vao: 0,
             vbo: 0,
