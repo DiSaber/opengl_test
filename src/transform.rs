@@ -22,7 +22,7 @@ impl Transform {
         });
         let scale = glm::scale(&glm::identity(), &self.scale);
         if is_camera {
-            rotation * position * scale
+            rotation * position
         } else {
             position * rotation * scale
         }
