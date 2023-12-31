@@ -1,6 +1,6 @@
 use std::ffi::CString;
 
-use crate::utils::WithLength;
+use crate::utils;
 
 #[derive(Clone, Copy)]
 pub enum ShaderType {
@@ -38,7 +38,7 @@ impl Shader {
                 gl::GetShaderiv(shader.id, gl::INFO_LOG_LENGTH, &mut error_length);
             }
 
-            let error = CString::with_length(error_length as usize);
+            let error = utils::cstring_with_length(error_length as usize);
             unsafe {
                 gl::GetShaderInfoLog(
                     shader.id,

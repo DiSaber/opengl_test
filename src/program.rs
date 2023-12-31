@@ -1,6 +1,6 @@
 use std::ffi::CString;
 
-use crate::{shader::Shader, utils::WithLength};
+use crate::{shader::Shader, utils};
 
 pub struct ShaderProgram {
     id: u32,
@@ -57,7 +57,7 @@ impl ShaderProgram {
                 gl::GetProgramiv(program.id, gl::INFO_LOG_LENGTH, &mut error_length);
             }
 
-            let error = CString::with_length(error_length as usize);
+            let error = utils::cstring_with_length(error_length as usize);
             unsafe {
                 gl::GetProgramInfoLog(
                     program.id,
