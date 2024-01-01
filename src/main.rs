@@ -1,5 +1,6 @@
 extern crate gl;
 extern crate glfw;
+extern crate nalgebra as na;
 extern crate nalgebra_glm as glm;
 
 mod camera;

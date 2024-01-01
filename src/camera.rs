@@ -33,17 +33,17 @@ impl Camera {
         }
     }
 
-    pub fn get_projection_matrix(&self) -> glm::Mat4 {
-        glm::perspective_fov(
+    pub fn get_projection_matrix(&self) -> na::Matrix4<f32> {
+        na::geometry::Perspective3::new(
+            (self.screen_width as f32) / (self.screen_height as f32),
             self.fov.to_radians(),
-            self.screen_width as f32,
-            self.screen_height as f32,
             self.near_clipping_plane,
             self.far_clipping_plane,
         )
+        .into()
     }
 
-    pub fn get_transform_matrix(&self) -> glm::Mat4 {
+    pub fn get_transform_matrix(&self) -> na::Matrix4<f32> {
         self.transform.to_matrix(true)
     }
 }

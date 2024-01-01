@@ -1,4 +1,5 @@
 use crate::{texture::Texture, vertex::Vertex};
+use na::{Vector2, Vector3};
 
 pub struct Mesh {
     vao: u32,
@@ -31,42 +32,42 @@ impl Mesh {
         let vertices = (0..(obj.positions.len() / 3))
             .map(|i| {
                 Vertex::new(
-                    glm::vec3(
+                    Vector3::new(
                         obj.positions[i * 3],
                         obj.positions[i * 3 + 1],
                         obj.positions[i * 3 + 2],
                     ),
                     if obj.normals.is_empty() {
-                        glm::Vec3::zeros()
+                        Vector3::zeros()
                     } else {
-                        glm::vec3(
+                        Vector3::new(
                             obj.normals[i * 3],
                             obj.normals[i * 3 + 1],
                             obj.normals[i * 3 + 2],
                         )
                     },
                     if obj.texcoords.is_empty() {
-                        glm::Vec2::zeros()
+                        Vector2::zeros()
                     } else {
-                        glm::vec2(obj.texcoords[i * 2], obj.texcoords[i * 2 + 1])
+                        Vector2::new(obj.texcoords[i * 2], obj.texcoords[i * 2 + 1])
                     },
                 )
             })
             .collect::<Vec<Vertex>>();
         let faces = (0..(obj.indices.len() / 3))
             .map(|i| {
-                glm::vec3(
+                Vector3::new(
                     obj.indices[i * 3],
                     obj.indices[i * 3 + 1],
                     obj.indices[i * 3 + 2],
                 )
             })
-            .collect::<Vec<glm::TVec3<u32>>>();
+            .collect::<Vec<Vector3<u32>>>();
 
         Self::from_vertices(vertices, faces)
     }
 
-    pub fn from_vertices(vertices: Vec<Vertex>, faces: Vec<glm::TVec3<u32>>) -> Self {
+    pub fn from_vertices(vertices: Vec<Vertex>, faces: Vec<Vector3<u32>>) -> Self {
         let object_buffer = vertices.into_iter().flatten().collect::<Vec<f32>>();
         let indices = faces.iter().flatten().cloned().collect::<Vec<u32>>();
 
@@ -102,7 +103,6 @@ impl Mesh {
             );
         }
 
-        let stride = Vertex::c_size();
         let mut offset = 0;
 
         for (i, length) in Vertex::lengths().iter().enumerate() {
@@ -112,7 +112,7 @@ impl Mesh {
                     *length as i32,
                     gl::FLOAT,
                     gl::FALSE,
-                    stride as i32,
+                    std::mem::size_of::<Vertex>() as i32,
                     offset as *const gl::types::GLvoid,
                 );
                 gl::EnableVertexAttribArray(i as u32);

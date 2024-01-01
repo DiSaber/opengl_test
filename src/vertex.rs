@@ -1,13 +1,13 @@
-use glm::{Vec2, Vec3};
+use na::{Vector2, Vector3};
 
 pub struct Vertex {
-    pub position: Vec3,
-    pub normal: Vec3,
-    pub tex_coord: Vec2,
+    pub position: Vector3<f32>,
+    pub normal: Vector3<f32>,
+    pub tex_coord: Vector2<f32>,
 }
 
 impl Vertex {
-    pub fn new(position: Vec3, normal: Vec3, tex_coord: Vec2) -> Self {
+    pub fn new(position: Vector3<f32>, normal: Vector3<f32>, tex_coord: Vector2<f32>) -> Self {
         Vertex {
             position,
             normal,
@@ -15,16 +15,12 @@ impl Vertex {
         }
     }
 
-    pub fn tex(position: Vec3, tex_coord: Vec2) -> Self {
+    pub fn tex(position: Vector3<f32>, tex_coord: Vector2<f32>) -> Self {
         Vertex {
             position,
-            normal: Vec3::zeros(),
+            normal: Vector3::zeros(),
             tex_coord,
         }
-    }
-
-    pub fn c_size() -> usize {
-        Self::lengths().iter().sum::<usize>() * std::mem::size_of::<f32>()
     }
 
     pub fn lengths() -> Vec<usize> {
@@ -38,9 +34,9 @@ impl IntoIterator for Vertex {
 
     fn into_iter(self) -> Self::IntoIter {
         vec![
-            glm::value_ptr(&self.position),
-            glm::value_ptr(&self.normal),
-            glm::value_ptr(&self.tex_coord),
+            self.position.as_slice(),
+            self.normal.as_slice(),
+            self.tex_coord.as_slice(),
         ]
         .into_iter()
         .flatten()
