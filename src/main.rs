@@ -118,8 +118,10 @@ fn main() {
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
         }
 
-        main_camera.screen_width = window.get_framebuffer_size().0;
-        main_camera.screen_height = window.get_framebuffer_size().1;
+        main_camera.set_screen_size(
+            window.get_framebuffer_size().0,
+            window.get_framebuffer_size().1,
+        );
         main_camera
             .transform
             .set_euler_angles(&glm::vec3(0.0, glfw.get_time() as f32, 0.0));

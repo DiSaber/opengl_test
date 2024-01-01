@@ -22,12 +22,7 @@ impl ShaderProgram {
                 gl::Uniform1i(location, int);
             },
             ProgramValue::Mat4(mat) => unsafe {
-                gl::UniformMatrix4fv(
-                    location,
-                    1,
-                    gl::FALSE,
-                    glm::value_ptr(&mat).as_ptr() as *const f32,
-                )
+                gl::UniformMatrix4fv(location, 1, gl::FALSE, mat.as_ptr())
             },
         };
     }
