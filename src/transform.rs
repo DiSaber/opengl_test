@@ -27,6 +27,20 @@ impl Transform {
             position * rotation * scale
         }
     }
+
+    pub fn set_euler_angles(&mut self, euler_angles: &glm::Vec3) {
+        self.rotation = glm::quat_angle_axis(euler_angles.y, &glm::vec3(0.0, 1.0, 0.0))
+            * glm::quat_angle_axis(euler_angles.x, &glm::vec3(1.0, 0.0, 0.0))
+            * glm::quat_angle_axis(euler_angles.z, &glm::vec3(0.0, 0.0, 1.0));
+    }
+
+    pub fn set_euler_angles_deg(&mut self, euler_angles: &glm::Vec3) {
+        self.set_euler_angles(&glm::vec3(
+            euler_angles.x.to_radians(),
+            euler_angles.y.to_radians(),
+            euler_angles.z.to_radians(),
+        ));
+    }
 }
 
 impl Default for Transform {

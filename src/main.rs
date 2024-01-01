@@ -96,18 +96,14 @@ fn main() {
 
     let mut slope_object = MeshObject::new(&slope_mesh, &[&texture], &shader_program);
     slope_object.transform.position = glm::vec3(0.0, 0.0, -1.0);
-    slope_object.transform.rotation = glm::quat_rotate(
-        &glm::quat_identity(),
-        135.0_f32.to_radians(),
-        &glm::vec3(0.0, 1.0, 0.0),
-    );
+    slope_object
+        .transform
+        .set_euler_angles_deg(&glm::vec3(0.0, 135.0_f32, 0.0));
 
     let mut floor_object = MeshObject::new(&mesh, &[&texture], &shader_program);
-    floor_object.transform.rotation = glm::quat_rotate(
-        &glm::quat_identity(),
-        90.0_f32.to_radians(),
-        &glm::vec3(1.0, 0.0, 0.0),
-    );
+    floor_object
+        .transform
+        .set_euler_angles_deg(&glm::vec3(90.0_f32, 0.0, 0.0));
     floor_object.transform.position = glm::vec3(0.0, -0.5, 0.0);
     floor_object.transform.scale = glm::vec3(5.0, 5.0, 5.0);
 
@@ -123,22 +119,17 @@ fn main() {
 
         main_camera.screen_width = window.get_framebuffer_size().0;
         main_camera.screen_height = window.get_framebuffer_size().1;
-        main_camera.transform.rotation = glm::quat_rotate(
-            &glm::quat_identity(),
-            glfw.get_time() as f32,
-            &glm::vec3(0.0, 1.0, 0.0),
-        );
+        main_camera
+            .transform
+            .set_euler_angles(&glm::vec3(0.0, glfw.get_time() as f32, 0.0));
 
-        mesh_object.transform.rotation = glm::quat_rotate(
-            &glm::quat_identity(),
-            glfw.get_time() as f32,
-            &glm::vec3(0.0, 0.0, 1.0),
-        );
-        mesh_object2.transform.rotation = glm::quat_rotate(
-            &glm::quat_identity(),
-            glfw.get_time() as f32,
-            &glm::vec3(0.0, 0.0, 1.0),
-        );
+        mesh_object
+            .transform
+            .set_euler_angles(&glm::vec3(0.0, 0.0, glfw.get_time() as f32));
+        mesh_object2
+            .transform
+            .set_euler_angles(&glm::vec3(0.0, 0.0, glfw.get_time() as f32));
+
         main_camera.draw_objects(&[&mesh_object, &floor_object, &mesh_object2, &slope_object]);
 
         window.swap_buffers();
