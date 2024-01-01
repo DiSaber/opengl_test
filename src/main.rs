@@ -85,7 +85,7 @@ fn main() {
         90.0,
         window.get_framebuffer_size().0,
         window.get_framebuffer_size().1,
-        0.3,
+        0.1,
         100.0,
     );
     main_camera.transform.position = Vector3::new(0.0, 0.0, 1.0);
