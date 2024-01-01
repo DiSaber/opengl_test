@@ -1,26 +1,26 @@
+use na::{Matrix4, UnitQuaternion, Vector3};
+
 #[derive(Debug, Clone, Copy)]
 pub struct Transform {
-    pub position: glm::Vec3,
-    pub rotation: glm::Quat,
-    pub scale: glm::Vec3,
+    pub position: Vector3<f32>,
+    pub rotation: UnitQuaternion<f32>,
+    pub scale: Vector3<f32>,
 }
 
 impl Transform {
-    pub fn to_matrix(&self, is_camera: bool) -> glm::Mat4 {
-        let position = glm::translate(
-            &glm::identity(),
-            &if is_camera {
-                -self.position
-            } else {
-                self.position
-            },
-        );
-        let rotation = glm::quat_to_mat4(&if is_camera {
-            glm::quat_inverse(&self.rotation)
+    pub fn to_matrix(&self, is_camera: bool) -> Matrix4<f32> {
+        let position = Matrix4::identity().prepend_translation(&if is_camera {
+            -self.position
         } else {
-            self.rotation
+            self.position
         });
-        let scale = glm::scale(&glm::identity(), &self.scale);
+        let rotation = if is_camera {
+            self.rotation.inverse().to_homogeneous()
+        } else {
+            self.rotation.to_homogeneous()
+        };
+        let scale = Matrix4::identity().prepend_nonuniform_scaling(&self.scale);
+
         if is_camera {
             rotation * position
         } else {
@@ -28,14 +28,13 @@ impl Transform {
         }
     }
 
-    pub fn set_euler_angles(&mut self, euler_angles: &glm::Vec3) {
-        self.rotation = glm::quat_angle_axis(euler_angles.y, &glm::vec3(0.0, 1.0, 0.0))
-            * glm::quat_angle_axis(euler_angles.x, &glm::vec3(1.0, 0.0, 0.0))
-            * glm::quat_angle_axis(euler_angles.z, &glm::vec3(0.0, 0.0, 1.0));
+    pub fn set_euler_angles(&mut self, euler_angles: &Vector3<f32>) {
+        self.rotation =
+            UnitQuaternion::from_euler_angles(euler_angles.x, euler_angles.y, euler_angles.z);
     }
 
-    pub fn set_euler_angles_deg(&mut self, euler_angles: &glm::Vec3) {
-        self.set_euler_angles(&glm::vec3(
+    pub fn set_euler_angles_deg(&mut self, euler_angles: &Vector3<f32>) {
+        self.set_euler_angles(&Vector3::new(
             euler_angles.x.to_radians(),
             euler_angles.y.to_radians(),
             euler_angles.z.to_radians(),
@@ -46,9 +45,9 @@ impl Transform {
 impl Default for Transform {
     fn default() -> Self {
         Self {
-            position: Default::default(),
-            rotation: glm::quat_identity(),
-            scale: glm::vec3(1.0, 1.0, 1.0),
+            position: Vector3::zeros(),
+            rotation: UnitQuaternion::identity(),
+            scale: Vector3::new(1.0, 1.0, 1.0),
         }
     }
 }

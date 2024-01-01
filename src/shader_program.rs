@@ -1,3 +1,4 @@
+use na::Matrix4;
 use std::ffi::CString;
 
 use crate::{shader::Shader, utils};
@@ -85,5 +86,5 @@ impl Drop for ShaderProgram {
 #[derive(Clone, Copy)]
 pub enum ProgramValue {
     Int(i32),
-    Mat4(glm::Mat4),
+    Mat4(Matrix4<f32>),
 }

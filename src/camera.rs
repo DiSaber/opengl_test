@@ -1,8 +1,9 @@
 use crate::{mesh_object::MeshObject, transform::Transform};
+use na::{Matrix4, Perspective3};
 
 pub struct Camera {
     pub transform: Transform,
-    perspective: na::geometry::Perspective3<f32>,
+    perspective: Perspective3<f32>,
 }
 
 impl Camera {
@@ -15,7 +16,7 @@ impl Camera {
     ) -> Camera {
         Camera {
             transform: Default::default(),
-            perspective: na::geometry::Perspective3::new(
+            perspective: Perspective3::new(
                 (screen_width as f32) / (screen_height as f32),
                 fov.to_radians(),
                 near_clipping_plane,
@@ -30,11 +31,11 @@ impl Camera {
         }
     }
 
-    pub fn get_projection_matrix(&self) -> na::Matrix4<f32> {
+    pub fn get_projection_matrix(&self) -> Matrix4<f32> {
         self.perspective.into()
     }
 
-    pub fn get_transform_matrix(&self) -> na::Matrix4<f32> {
+    pub fn get_transform_matrix(&self) -> Matrix4<f32> {
         self.transform.to_matrix(true)
     }
 
