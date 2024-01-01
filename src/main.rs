@@ -12,7 +12,7 @@ mod transform;
 mod utils;
 mod vertex;
 
-use std::{collections::HashMap, fs, io::BufReader};
+use std::{collections::HashMap, fs};
 
 use camera::Camera;
 use glfw::Context;
@@ -50,20 +50,7 @@ fn main() {
     let resources: HashMap<String, Vec<u8>> =
         bincode::deserialize(&fs::read(exe_dir.join("resources.pck")).unwrap()).unwrap();
 
-    let (models, _) = tobj::load_obj_buf(
-        &mut BufReader::new(resources["slope.obj"].as_slice()),
-        &tobj::GPU_LOAD_OPTIONS,
-        |path| {
-            tobj::load_mtl_buf(&mut if let Some(mtl) =
-                resources.get(path.file_name().unwrap().to_str().unwrap())
-            {
-                BufReader::new(mtl.as_slice())
-            } else {
-                BufReader::new(&[] as &[u8])
-            })
-        },
-    )
-    .unwrap();
+    let models = utils::tobj_from_slice_no_mtl(resources["slope.obj"].as_slice()).unwrap();
 
     let slope_mesh = Mesh::from_tobj(&models[0].mesh);
 
