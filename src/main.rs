@@ -117,10 +117,6 @@ fn main() {
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
         }
 
-        main_camera.set_screen_size(
-            window.get_framebuffer_size().0,
-            window.get_framebuffer_size().1,
-        );
         main_camera
             .transform
             .set_euler_angles(&Vector3::new(0.0, glfw.get_time() as f32, 0.0));
@@ -132,6 +128,10 @@ fn main() {
             .transform
             .set_euler_angles(&Vector3::new(0.0, 0.0, glfw.get_time() as f32));
 
+        main_camera.set_screen_size(
+            window.get_framebuffer_size().0,
+            window.get_framebuffer_size().1,
+        );
         main_camera.draw_objects(&[&mesh_object, &floor_object, &mesh_object2, &slope_object]);
 
         window.swap_buffers();

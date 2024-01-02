@@ -9,21 +9,12 @@ pub struct Transform {
 
 impl Transform {
     pub fn to_matrix(&self, is_camera: bool) -> Matrix4<f32> {
-        let position = Matrix4::identity().prepend_translation(&if is_camera {
-            -self.position
-        } else {
-            self.position
-        });
-        let rotation = if is_camera {
-            self.rotation.inverse()
-        } else {
-            self.rotation
-        }
-        .to_homogeneous();
+        let position = Matrix4::identity().prepend_translation(&self.position);
+        let rotation = self.rotation.to_homogeneous();
         let scale = Matrix4::identity().prepend_nonuniform_scaling(&self.scale);
 
         if is_camera {
-            rotation * position
+            (position * rotation).try_inverse().unwrap()
         } else {
             position * rotation * scale
         }
