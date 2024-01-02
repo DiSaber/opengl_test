@@ -68,14 +68,11 @@ impl Mesh {
     }
 
     pub fn from_vertices(vertices: Vec<Vertex>, faces: Vec<Vector3<u32>>) -> Self {
-        let object_buffer = vertices.into_iter().flatten().collect::<Vec<f32>>();
-        let indices = faces.iter().flatten().cloned().collect::<Vec<u32>>();
-
         let mut mesh = Mesh {
             vao: 0,
             vbo: 0,
             ebo: 0,
-            total_indices: indices.len() as i32,
+            total_indices: (faces.len() * 3) as i32,
         };
         unsafe {
             gl::GenBuffers(1, &mut mesh.vbo);
@@ -89,16 +86,16 @@ impl Mesh {
             gl::BindBuffer(gl::ARRAY_BUFFER, mesh.vbo);
             gl::BufferData(
                 gl::ARRAY_BUFFER,
-                (object_buffer.len() * std::mem::size_of::<f32>()) as isize,
-                object_buffer.as_ptr() as *const gl::types::GLvoid,
+                (vertices.len() * std::mem::size_of::<Vertex>()) as isize,
+                vertices.as_ptr() as *const gl::types::GLvoid,
                 gl::STATIC_DRAW,
             );
 
             gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, mesh.ebo);
             gl::BufferData(
                 gl::ELEMENT_ARRAY_BUFFER,
-                (indices.len() * std::mem::size_of::<u32>()) as isize,
-                indices.as_ptr() as *const gl::types::GLvoid,
+                (faces.len() * std::mem::size_of::<Vector3<f32>>()) as isize,
+                faces.as_ptr() as *const gl::types::GLvoid,
                 gl::STATIC_DRAW,
             );
         }
