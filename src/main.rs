@@ -42,9 +42,7 @@ fn main() {
         gl::Enable(gl::DEPTH_TEST);
     }
 
-    window.set_framebuffer_size_callback(|_, width, height| unsafe {
-        gl::Viewport(0, 0, width, height);
-    });
+    window.set_cursor_mode(glfw::CursorMode::Disabled);
 
     let exe_path = std::env::current_exe().unwrap();
     let exe_dir = exe_path.parent().unwrap();
@@ -107,19 +105,35 @@ fn main() {
     floor_object.transform.position = Vector3::new(0.0, -0.5, 0.0);
     floor_object.transform.scale = Vector3::new(5.0, 5.0, 5.0);
 
+    let mut last_frame_time = glfw.get_time();
+
+    let mouse_sensitivity = 0.1;
+    let (mut last_mouse_x, mut last_mouse_y) = window.get_cursor_pos();
+    let mut camera_rotation = Vector3::<f32>::zeros();
+
     while !window.should_close() {
         if window.get_key(glfw::Key::Escape) == glfw::Action::Press {
             window.set_should_close(true);
         }
 
+        let (width, height) = window.get_framebuffer_size();
+
         unsafe {
+            gl::Viewport(0, 0, width, height);
             gl::ClearColor(0.2, 0.3, 0.3, 1.0);
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
         }
 
-        main_camera
-            .transform
-            .set_euler_angles(&Vector3::new(0.0, glfw.get_time() as f32, 0.0));
+        let (mouse_x, mouse_y) = window.get_cursor_pos();
+        camera_rotation = Vector3::new(
+            (camera_rotation.x - (((mouse_y - last_mouse_y) * mouse_sensitivity) as f32))
+                .clamp(-90.0, 90.0),
+            camera_rotation.y - (((mouse_x - last_mouse_x) * mouse_sensitivity) as f32),
+            0.0,
+        );
+        main_camera.transform.set_euler_angles_deg(&camera_rotation);
+
+        let delta_time = glfw.get_time() - last_frame_time;
 
         mesh_object
             .transform
@@ -128,11 +142,11 @@ fn main() {
             .transform
             .set_euler_angles(&Vector3::new(0.0, 0.0, glfw.get_time() as f32));
 
-        main_camera.set_screen_size(
-            window.get_framebuffer_size().0,
-            window.get_framebuffer_size().1,
-        );
+        main_camera.set_screen_size(width, height);
         main_camera.draw_objects(&[&mesh_object, &floor_object, &mesh_object2, &slope_object]);
+
+        (last_mouse_x, last_mouse_y) = (mouse_x, mouse_y);
+        last_frame_time = delta_time;
 
         window.swap_buffers();
         glfw.poll_events();
