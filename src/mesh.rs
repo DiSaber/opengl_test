@@ -94,7 +94,7 @@ impl Mesh {
             gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, mesh.ebo);
             gl::BufferData(
                 gl::ELEMENT_ARRAY_BUFFER,
-                (faces.len() * std::mem::size_of::<Vector3<f32>>()) as isize,
+                (faces.len() * std::mem::size_of::<Vector3<u32>>()) as isize,
                 faces.as_ptr() as *const gl::types::GLvoid,
                 gl::STATIC_DRAW,
             );
