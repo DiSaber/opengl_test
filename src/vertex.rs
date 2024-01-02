@@ -24,7 +24,7 @@ impl Vertex {
         }
     }
 
-    pub fn lengths() -> Vec<usize> {
-        vec![3, 3, 2]
+    pub fn lengths() -> [usize; 3] {
+        [3, 3, 2]
     }
 }
