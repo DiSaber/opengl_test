@@ -21,7 +21,7 @@ impl<'a> MeshObject<'a> {
         textures: &[&'a Texture],
         shader_program: &'a ShaderProgram,
     ) -> Self {
-        let mesh_object = MeshObject {
+        let mesh_object = Self {
             mesh,
             textures: Vec::from(textures),
             shader_program,

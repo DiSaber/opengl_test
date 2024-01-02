@@ -8,7 +8,7 @@ impl Texture {
     }
 
     pub fn from_image_bytes(image: &[u8], format: image::ImageFormat) -> Self {
-        let mut texture = Texture { id: 0 };
+        let mut texture = Self { id: 0 };
 
         unsafe {
             gl::GenTextures(1, &mut texture.id);

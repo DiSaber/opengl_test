@@ -9,7 +9,7 @@ pub struct Vertex {
 
 impl Vertex {
     pub fn new(position: Vector3<f32>, normal: Vector3<f32>, tex_coord: Vector2<f32>) -> Self {
-        Vertex {
+        Self {
             position,
             normal,
             tex_coord,
@@ -17,7 +17,7 @@ impl Vertex {
     }
 
     pub fn tex(position: Vector3<f32>, tex_coord: Vector2<f32>) -> Self {
-        Vertex {
+        Self {
             position,
             normal: Vector3::zeros(),
             tex_coord,

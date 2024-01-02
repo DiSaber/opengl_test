@@ -68,7 +68,7 @@ impl Mesh {
     }
 
     pub fn from_vertices(vertices: Vec<Vertex>, faces: Vec<Vector3<u32>>) -> Self {
-        let mut mesh = Mesh {
+        let mut mesh = Self {
             vao: 0,
             vbo: 0,
             ebo: 0,

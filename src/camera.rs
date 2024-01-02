@@ -13,8 +13,8 @@ impl Camera {
         screen_height: i32,
         near_clipping_plane: f32,
         far_clipping_plane: f32,
-    ) -> Camera {
-        Camera {
+    ) -> Self {
+        Self {
             transform: Default::default(),
             perspective: Perspective3::new(
                 (screen_width as f32) / (screen_height as f32),
