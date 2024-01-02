@@ -15,10 +15,11 @@ impl Transform {
             self.position
         });
         let rotation = if is_camera {
-            self.rotation.inverse().to_homogeneous()
+            self.rotation.inverse()
         } else {
-            self.rotation.to_homogeneous()
-        };
+            self.rotation
+        }
+        .to_homogeneous();
         let scale = Matrix4::identity().prepend_nonuniform_scaling(&self.scale);
 
         if is_camera {
