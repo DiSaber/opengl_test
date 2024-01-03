@@ -38,12 +38,6 @@ fn main() {
     window.make_current();
     gl::load_with(|s| window.get_proc_address(s));
 
-    unsafe {
-        gl::Enable(gl::DEPTH_TEST);
-    }
-
-    window.set_cursor_mode(glfw::CursorMode::Disabled);
-
     let exe_path = std::env::current_exe().unwrap();
     let exe_dir = exe_path.parent().unwrap();
     let resources: HashMap<String, Vec<u8>> =
@@ -85,6 +79,7 @@ fn main() {
         window.get_framebuffer_size().1,
         0.1,
         100.0,
+        palette::LinSrgba::new(0.2, 0.3, 0.3, 1.0),
     );
     main_camera.transform.position = Vector3::new(0.0, 0.0, 1.0);
 
@@ -107,6 +102,7 @@ fn main() {
 
     let mut last_frame_time = glfw.get_time();
 
+    window.set_cursor_mode(glfw::CursorMode::Disabled);
     let mouse_sensitivity = 0.1;
     let (mut last_mouse_x, mut last_mouse_y) = window.get_cursor_pos();
     let mut camera_rotation = Vector3::<f32>::zeros();
@@ -114,14 +110,6 @@ fn main() {
     while !window.should_close() {
         if window.get_key(glfw::Key::Escape) == glfw::Action::Press {
             window.set_should_close(true);
-        }
-
-        let (width, height) = window.get_framebuffer_size();
-
-        unsafe {
-            gl::Viewport(0, 0, width, height);
-            gl::ClearColor(0.2, 0.3, 0.3, 1.0);
-            gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
         }
 
         let (mouse_x, mouse_y) = window.get_cursor_pos();
@@ -142,7 +130,9 @@ fn main() {
             .transform
             .set_euler_angles(&Vector3::new(0.0, 0.0, glfw.get_time() as f32));
 
+        let (width, height) = window.get_framebuffer_size();
         main_camera.set_screen_size(width, height);
+        main_camera.clear();
         main_camera.draw_objects(&[&mesh_object, &floor_object, &mesh_object2, &slope_object]);
 
         (last_mouse_x, last_mouse_y) = (mouse_x, mouse_y);
