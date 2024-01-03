@@ -13,3 +13,4 @@ image = "0.24.7"
 nalgebra = "0.32.3"
 palette = "0.7.3"
 tobj = "4.0.0"
+my_gl = { git = "https://github.com/DiSaber/my_gl.git" }

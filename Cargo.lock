@@ -375,6 +375,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "my_gl"
+version = "0.0.1"
+source = "git+https://github.com/DiSaber/my_gl.git#e67a8175527e501502687e09e6c988bdac9638ca"
+dependencies = [
+ "gl",
+ "image",
+ "nalgebra",
+ "palette",
+ "tobj",
+]
+
+[[package]]
 name = "nalgebra"
 version = "0.32.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -463,6 +475,7 @@ dependencies = [
  "gl",
  "glfw",
  "image",
+ "my_gl",
  "nalgebra",
  "palette",
  "tobj",

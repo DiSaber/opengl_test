@@ -1,26 +1,17 @@
 extern crate nalgebra as na;
 
-mod camera;
-mod mesh;
-mod mesh_object;
-mod shader;
-mod shader_program;
-mod texture;
-mod transform;
-mod utils;
-mod vertex;
-
 use std::{collections::HashMap, fs};
 
-use camera::Camera;
 use glfw::Context;
-use mesh::Mesh;
-use mesh_object::MeshObject;
+use my_gl::utils;
+use my_gl::Camera;
+use my_gl::Mesh;
+use my_gl::MeshObject;
+use my_gl::ShaderProgram;
+use my_gl::Texture;
+use my_gl::Vertex;
+use my_gl::{Shader, ShaderType};
 use na::{Vector2, Vector3};
-use shader::{Shader, ShaderType};
-use shader_program::ShaderProgram;
-use texture::Texture;
-use vertex::Vertex;
 
 fn main() {
     let mut glfw = glfw::init(glfw::fail_on_errors).unwrap();
@@ -69,7 +60,10 @@ fn main() {
 
     let shader_program = ShaderProgram::from_shaders(&vertex_shader, &fragment_shader).unwrap();
 
-    let texture = Texture::from_image_bytes(&resources["container.jpg"], image::ImageFormat::Jpeg);
+    let texture = Texture::from_image_bytes(
+        image::load_from_memory_with_format(&resources["container.jpg"], image::ImageFormat::Jpeg)
+            .unwrap(),
+    );
 
     let mut main_camera = Camera::new(
         90.0,
