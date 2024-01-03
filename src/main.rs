@@ -1,31 +1,12 @@
-extern crate nalgebra as na;
-
 use std::{collections::HashMap, fs};
 
-use glfw::Context;
-use my_gl::utils;
-use my_gl::Camera;
-use my_gl::Mesh;
-use my_gl::MeshObject;
-use my_gl::ShaderProgram;
-use my_gl::Texture;
-use my_gl::Vertex;
-use my_gl::{Shader, ShaderType};
-use na::{Vector2, Vector3};
+use my_gl::{
+    na::{Vector2, Vector3},
+    utils, Camera, Game, Mesh, MeshObject, Shader, ShaderProgram, ShaderType, Texture, Vertex,
+};
 
 fn main() {
-    let mut glfw = glfw::init(glfw::fail_on_errors).unwrap();
-    glfw.window_hint(glfw::WindowHint::ContextVersion(4, 6));
-    glfw.window_hint(glfw::WindowHint::ContextCreationApi(
-        glfw::ContextCreationApi::Native,
-    ));
-
-    let (mut window, _events) = glfw
-        .create_window(800, 600, "OpenGL Test", glfw::WindowMode::Windowed)
-        .unwrap();
-
-    window.make_current();
-    gl::load_with(|s| window.get_proc_address(s));
+    let mut game = Game::new(800, 600, "OpenGL Test", my_gl::WindowMode::Windowed);
 
     let exe_path = std::env::current_exe().unwrap();
     let exe_dir = exe_path.parent().unwrap();
@@ -61,17 +42,20 @@ fn main() {
     let shader_program = ShaderProgram::from_shaders(&vertex_shader, &fragment_shader).unwrap();
 
     let texture = Texture::from_image_bytes(
-        image::load_from_memory_with_format(&resources["container.jpg"], image::ImageFormat::Jpeg)
-            .unwrap(),
+        my_gl::image::load_from_memory_with_format(
+            &resources["container.jpg"],
+            my_gl::ImageFormat::Jpeg,
+        )
+        .unwrap(),
     );
 
     let mut main_camera = Camera::new(
         90.0,
-        window.get_framebuffer_size().0,
-        window.get_framebuffer_size().1,
+        game.get_framebuffer_size().0,
+        game.get_framebuffer_size().1,
         0.01,
         100.0,
-        palette::LinSrgba::new(0.2, 0.3, 0.3, 1.0),
+        my_gl::palette::LinSrgba::new(0.2, 0.3, 0.3, 1.0),
     );
     main_camera.transform.position = Vector3::new(0.0, 0.0, 1.0);
 
@@ -92,20 +76,18 @@ fn main() {
     floor_object.transform.position = Vector3::new(0.0, -0.5, 0.0);
     floor_object.transform.scale = Vector3::new(5.0, 5.0, 5.0);
 
-    let mut last_frame_time = glfw.get_time();
-
-    window.set_cursor_mode(glfw::CursorMode::Disabled);
+    game.set_mouse_mode(my_gl::MouseMode::Disabled);
     let mouse_sensitivity = 0.1;
     let movement_sensitivity = 1.0;
-    let (mut last_mouse_x, mut last_mouse_y) = window.get_cursor_pos();
+    let (mut last_mouse_x, mut last_mouse_y) = game.get_mouse_position();
     let mut camera_rotation = Vector3::<f32>::zeros();
 
-    while !window.should_close() {
-        if window.get_key(glfw::Key::Escape) == glfw::Action::Press {
-            window.set_should_close(true);
+    game.run_update(|game, delta_time| {
+        if game.get_key(my_gl::Key::Escape) == my_gl::Action::Press {
+            game.close_window();
         }
 
-        let (mouse_x, mouse_y) = window.get_cursor_pos();
+        let (mouse_x, mouse_y) = game.get_mouse_position();
         camera_rotation = Vector3::new(
             (camera_rotation.x - (((mouse_y - last_mouse_y) * mouse_sensitivity) as f32))
                 .clamp(-90.0, 90.0),
@@ -114,32 +96,29 @@ fn main() {
         );
         main_camera.transform.set_euler_angles_deg(&camera_rotation);
 
-        let current_time = glfw.get_time();
-        let delta_time = current_time - last_frame_time;
-
         let mut movement = Vector3::<f32>::zeros();
-        if window.get_key(glfw::Key::W) == glfw::Action::Press {
+        if game.get_key(my_gl::Key::W) == my_gl::Action::Press {
             movement.z -= 1.0;
         }
-        if window.get_key(glfw::Key::S) == glfw::Action::Press {
+        if game.get_key(my_gl::Key::S) == my_gl::Action::Press {
             movement.z += 1.0;
         }
-        if window.get_key(glfw::Key::D) == glfw::Action::Press {
+        if game.get_key(my_gl::Key::D) == my_gl::Action::Press {
             movement.x += 1.0;
         }
-        if window.get_key(glfw::Key::A) == glfw::Action::Press {
+        if game.get_key(my_gl::Key::A) == my_gl::Action::Press {
             movement.x -= 1.0;
         }
-        if window.get_key(glfw::Key::E) == glfw::Action::Press {
+        if game.get_key(my_gl::Key::E) == my_gl::Action::Press {
             movement.y += 1.0;
         }
-        if window.get_key(glfw::Key::Q) == glfw::Action::Press {
+        if game.get_key(my_gl::Key::Q) == my_gl::Action::Press {
             movement.y -= 1.0;
         }
         main_camera.transform.position += main_camera.transform.rotation
             * movement
             * (delta_time as f32)
-            * (if window.get_key(glfw::Key::LeftShift) == glfw::Action::Press {
+            * (if game.get_key(my_gl::Key::LeftShift) == my_gl::Action::Press {
                 movement_sensitivity * 2.0
             } else {
                 movement_sensitivity
@@ -147,20 +126,16 @@ fn main() {
 
         mesh_object
             .transform
-            .set_euler_angles(&Vector3::new(0.0, 0.0, glfw.get_time() as f32));
+            .set_euler_angles(&Vector3::new(0.0, 0.0, game.get_time() as f32));
         mesh_object2
             .transform
-            .set_euler_angles(&Vector3::new(0.0, 0.0, glfw.get_time() as f32));
+            .set_euler_angles(&Vector3::new(0.0, 0.0, game.get_time() as f32));
 
-        let (width, height) = window.get_framebuffer_size();
+        let (width, height) = game.get_framebuffer_size();
         main_camera.set_screen_size(width, height);
         main_camera.clear();
         main_camera.draw_objects(&[&mesh_object, &floor_object, &mesh_object2, &slope_object]);
 
         (last_mouse_x, last_mouse_y) = (mouse_x, mouse_y);
-        last_frame_time = current_time;
-
-        window.swap_buffers();
-        glfw.poll_events();
-    }
+    });
 }
