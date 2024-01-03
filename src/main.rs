@@ -77,7 +77,7 @@ fn main() {
         90.0,
         window.get_framebuffer_size().0,
         window.get_framebuffer_size().1,
-        0.1,
+        0.01,
         100.0,
         palette::LinSrgba::new(0.2, 0.3, 0.3, 1.0),
     );
@@ -104,6 +104,7 @@ fn main() {
 
     window.set_cursor_mode(glfw::CursorMode::Disabled);
     let mouse_sensitivity = 0.1;
+    let movement_sensitivity = 1.0;
     let (mut last_mouse_x, mut last_mouse_y) = window.get_cursor_pos();
     let mut camera_rotation = Vector3::<f32>::zeros();
 
@@ -121,7 +122,36 @@ fn main() {
         );
         main_camera.transform.set_euler_angles_deg(&camera_rotation);
 
-        let delta_time = glfw.get_time() - last_frame_time;
+        let current_time = glfw.get_time();
+        let delta_time = current_time - last_frame_time;
+
+        let mut movement = Vector3::<f32>::zeros();
+        if window.get_key(glfw::Key::W) == glfw::Action::Press {
+            movement.z -= 1.0;
+        }
+        if window.get_key(glfw::Key::S) == glfw::Action::Press {
+            movement.z += 1.0;
+        }
+        if window.get_key(glfw::Key::D) == glfw::Action::Press {
+            movement.x += 1.0;
+        }
+        if window.get_key(glfw::Key::A) == glfw::Action::Press {
+            movement.x -= 1.0;
+        }
+        if window.get_key(glfw::Key::E) == glfw::Action::Press {
+            movement.y += 1.0;
+        }
+        if window.get_key(glfw::Key::Q) == glfw::Action::Press {
+            movement.y -= 1.0;
+        }
+        main_camera.transform.position += main_camera.transform.rotation
+            * movement
+            * (delta_time as f32)
+            * (if window.get_key(glfw::Key::LeftShift) == glfw::Action::Press {
+                movement_sensitivity * 2.0
+            } else {
+                movement_sensitivity
+            } as f32);
 
         mesh_object
             .transform
@@ -136,7 +166,7 @@ fn main() {
         main_camera.draw_objects(&[&mesh_object, &floor_object, &mesh_object2, &slope_object]);
 
         (last_mouse_x, last_mouse_y) = (mouse_x, mouse_y);
-        last_frame_time = delta_time;
+        last_frame_time = current_time;
 
         window.swap_buffers();
         glfw.poll_events();
