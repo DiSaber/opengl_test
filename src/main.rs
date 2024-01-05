@@ -2,7 +2,8 @@ use std::{collections::HashMap, fs};
 
 use my_gl::{
     na::{Vector2, Vector3},
-    utils, Camera, Game, Mesh, MeshObject, Shader, ShaderProgram, ShaderType, Texture, Vertex,
+    utils, Camera, Game, Mesh, MeshObject, Shader, ShaderProgram, ShaderType, Texture, UsageType,
+    Vertex,
 };
 
 fn main() {
@@ -15,7 +16,7 @@ fn main() {
 
     let models = utils::tobj_from_slice_no_mtl(resources["slope.obj"].as_slice()).unwrap();
 
-    let slope_mesh = Mesh::from_tobj(&models[0].mesh);
+    let slope_mesh = Mesh::from_tobj(&models[0].mesh, UsageType::Static);
 
     let vertices = vec![
         Vertex::tex(Vector3::new(0.5, 0.5, 0.0), Vector2::new(1.0, 0.0)),
@@ -25,7 +26,7 @@ fn main() {
     ];
     let faces = vec![Vector3::new(0, 1, 3), Vector3::new(1, 2, 3)];
 
-    let mesh = Mesh::from_vertices(vertices, faces);
+    let mesh = Mesh::from_vertices(vertices, faces, UsageType::Static);
 
     let vertex_shader = Shader::from_source(
         &resources["triangle_texture.vert"],
