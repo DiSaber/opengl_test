@@ -49,7 +49,7 @@ fn main() {
         .unwrap(),
     );
 
-    let mut main_camera = Camera::new(
+    let mut main_camera = Camera::new_perspective(
         90.0,
         game.get_framebuffer_size().0,
         game.get_framebuffer_size().1,
