@@ -367,7 +367,7 @@ dependencies = [
 [[package]]
 name = "my_gl"
 version = "0.0.1"
-source = "git+https://github.com/DiSaber/my_gl.git#3a02f4ce758d317d3d06698e82f9d5fb1b5e6daf"
+source = "git+https://github.com/DiSaber/my_gl.git#6ffec6ad5ceb48e405f20ddb7207c1d9acdaad9d"
 dependencies = [
  "gl",
  "glfw",

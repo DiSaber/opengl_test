@@ -26,7 +26,8 @@ fn main() {
     ];
     let faces = vec![Vector3::new(0, 1, 3), Vector3::new(1, 2, 3)];
 
-    let mesh = Mesh::from_vertices(vertices, faces, UsageType::Static);
+    let mesh = Mesh::from_vertices(&vertices, &faces, UsageType::Static);
+    let mesh2 = mesh.clone();
 
     let vertex_shader = Shader::from_source(
         &resources["triangle_texture.vert"],
@@ -70,7 +71,7 @@ fn main() {
     slope_object
         .transform
         .set_euler_angles_deg(&Vector3::new(0.0, 135.0_f32, 0.0));
-    let mut floor_object = MeshObject::new(&mesh, &[&texture], &shader_program);
+    let mut floor_object = MeshObject::new(&mesh2, &[&texture], &shader_program);
     floor_object
         .transform
         .set_euler_angles_deg(&Vector3::new(90.0_f32, 0.0, 0.0));
