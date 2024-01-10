@@ -4,9 +4,9 @@ use my_gl::{
     image::{self, ImageFormat},
     na::{Vector2, Vector3},
     palette::LinSrgba,
-    utils, Action, Alignment, Camera, FilterMode, Font, Game, Key, Mesh, MeshObject, MouseMode,
-    OrthographicType, Shader, ShaderProgram, ShaderType, Size, TextObject, Texture, UsageType,
-    Vertex, WrapMode,
+    utils, Action, Camera, FilterMode, Font, Game, Key, Mesh, MeshObject, MouseMode,
+    OrthographicType, Shader, ShaderProgram, ShaderType, TextObject, Texture, UsageType, Vertex,
+    WrapMode,
 };
 
 fn main() {
@@ -96,15 +96,14 @@ fn main() {
 
     let font = Font::from_bytes(&resources["Arial.ttf"]).unwrap();
     let mut text_object = TextObject::new(
-        "".into(),
+        "FPS: 0000\nHello World".into(), // Pre-allocate the internal mesh buffers for minimal buffer reallocation later (SubBufferData vs BufferData)
         32,
-        LinSrgba::new(1.0, 0.2, 0.2, 1.0),
-        Size::Auto, // Manual size for center/right alignment: Size::Manual(Vector2::new(150.0, 70.0))
-        Alignment::TopLeft,
         &ui_shader_program,
         &font,
         UsageType::Dynamic,
-    );
+    )
+    .with_text_color(LinSrgba::new(1.0, 0.2, 0.2, 1.0));
+    // .with_size(Size::Manual(Vector2::new(150.0, 70.0)));
 
     game.set_mouse_mode(MouseMode::Disabled);
     let mouse_sensitivity = 0.1;
@@ -170,7 +169,7 @@ fn main() {
             &mut slope_object,
         ]);
 
-        text_object.text = format!("FPS: {:.0}\nHello World", 1.0 / delta_time);
+        text_object.set_text(format!("FPS: {:.0}\nHello World", 1.0 / delta_time));
 
         ui_camera.set_screen_size(game.get_framebuffer_size());
         ui_camera.draw_objects(&mut [&mut text_object]);
