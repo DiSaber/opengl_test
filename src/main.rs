@@ -4,9 +4,9 @@ use my_gl::{
     image::{self, ImageFormat},
     na::{Vector2, Vector3},
     palette::LinSrgba,
-    utils, Action, Camera, FilterMode, Font, Game, Key, Mesh, MeshObject, MouseMode,
-    OrthographicType, Shader, ShaderProgram, ShaderType, TextObject, Texture, UsageType, Vertex,
-    WrapMode,
+    utils, Action, Alignment, Camera, FilterMode, Font, Game, Key, Mesh, MeshObject, MouseMode,
+    OrthographicType, Shader, ShaderProgram, ShaderType, Size, TextObject, Texture, UsageType,
+    Vertex, WrapMode,
 };
 
 fn main() {
@@ -99,6 +99,8 @@ fn main() {
         "".into(),
         32,
         LinSrgba::new(1.0, 0.2, 0.2, 1.0),
+        Size::Auto, // Manual size for center/right alignment: Size::Manual(Vector2::new(150.0, 70.0))
+        Alignment::TopLeft,
         &ui_shader_program,
         &font,
         UsageType::Dynamic,
