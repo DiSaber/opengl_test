@@ -377,7 +377,7 @@ dependencies = [
 [[package]]
 name = "my_gl"
 version = "0.0.4"
-source = "git+https://github.com/DiSaber/my_gl.git#6caafb9c8139e1e0da124585d12d4c79d1808a4a"
+source = "git+https://github.com/DiSaber/my_gl.git#75c95b989cc87c4149fc4dc268a63cd9ac71aef7"
 dependencies = [
  "ab_glyph",
  "gl",
